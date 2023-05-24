@@ -6,7 +6,6 @@ on:
       - "main"
   workflow_dispatch:
 
-
 jobs:
   build-and-push-release-image:
     runs-on: ubuntu-latest
@@ -56,28 +55,14 @@ jobs:
             type=raw,value=latest
             type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
-            type=semver,pattern={{major}},value=${{ steps.keydb.outputs.release }}
 
-      - name: Build and Push AMD64
-        id: docker_build_amd64
+      - name: Build and Push
+        id: docker_build
         uses: docker/build-push-action@v3
         with:
           context: ./
           file: ./Dockerfile
-          platforms: linux/amd64
-          build-args: ARCH=amd64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Build and Push ARM64
-        id: docker_build_arm64
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./Dockerfile
-          platforms: linux/arm64
-          build-args: ARCH=arm64
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
