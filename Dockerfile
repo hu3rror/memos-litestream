@@ -14,23 +14,23 @@ ARG LITESTREAM_VERSION=v0.3.9
 ARG TARGETARCH
 
 # Get memos binary
-RUN wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip && \
-    unzip /tmp/memos.zip && \
-    mv "memos--${TARGETARCH}" /usr/local/bin/memos && \
-    chmod a+x /usr/local/bin/memos
+RUN wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip \
+    && unzip /tmp/memos.zip \
+    && mv "memos--${TARGETARCH}" /usr/local/bin/memos \
+    && chmod a+x /usr/local/bin/memos
 
 # Get litestream binary
-RUN wget -q -O /tmp/litestream.tar.gz https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-${LITESTREAM_VERSION}-linux-${TARGETARCH}-static.tar.gz && \
-    tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz && \
-    rm -rf litestream.tar.gz && \
-    chmod a+x /usr/local/bin/litestream
+RUN wget -q -O /tmp/litestream.tar.gz https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-${LITESTREAM_VERSION}-linux-${TARGETARCH}-static.tar.gz \
+    && tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz \
+    && rm -rf litestream.tar.gz \
+    && chmod a+x /usr/local/bin/litestream
 
 FROM docker.io/ubuntu:${UBUNTU_TAG} AS monolithic
 
 # Install essential packages
-RUN apt-get update && \
-    apt-get install -yq --no-install-recommends tzdata ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -yq --no-install-recommends tzdata ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy binary from builder.
 COPY --from=builder /usr/local/bin/memos /usr/local/bin/memos
