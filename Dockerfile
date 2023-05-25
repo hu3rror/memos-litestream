@@ -9,12 +9,17 @@ RUN apk add --no-cache unzip wget
 # Define apps version
 ARG MEMOS_VERSION=0.13.0
 ARG LITESTREAM_VERSION=v0.3.9
+ARG TESTING
 
 # Define architecture component
 ARG TARGETARCH
 
 # Get memos binary
-RUN wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip \
+RUN if [ "${TESTING}" = "1" ]; then \
+        wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/main/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
+    else \
+        wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
+    fi \ 
     && unzip /tmp/memos.zip \
     && mv "memos--${TARGETARCH}" /usr/local/bin/memos \
     && chmod a+x /usr/local/bin/memos
