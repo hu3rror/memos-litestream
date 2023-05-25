@@ -7,8 +7,8 @@ This project is based on [usememos/memos](https://github.com/usememos/memos) and
 ## Prerequisites
 - Docker
 - S3 / [BackBlaze B2](https://www.backblaze.com/) account (The default template is B2-based)
-  -  To [Create a bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and get bucket name / endpoint url
-  -  To [Create a user](https://litestream.io/guides/backblaze/#create-a-user) and get access-key-id / secret-access-key 
+  -  To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and get bucket name / endpoint url
+  -  To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and get access-key-id / secret-access-key 
 
 ## Installation
 
@@ -62,4 +62,4 @@ docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
 
 ## Plan
-- Support backing up local resource libraries. 
+- Support backing up local resource. 
