@@ -8,7 +8,7 @@ RUN apk add --no-cache unzip wget
 
 # Define apps version
 ARG MEMOS_VERSION=0.13.0
-ARG LITESTREAM_VERSION=v0.3.9
+ARG LITESTREAM_VERSION=v0.4.0-beta.2
 ARG TESTING
 
 # Define architecture component
