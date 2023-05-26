@@ -5,18 +5,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  reviewdog-litestream:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+#   reviewdog-litestream:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - uses: reviewdog/action-depup/with-pr@master
-        id: depup-litestream
-        with:
-          file: Dockerfile
-          version_name: LITESTREAM_VERSION
-          repo: benbjohnson/litestream
-          tag: true
+#       - uses: reviewdog/action-depup/with-pr@master
+#         id: depup-litestream
+#         with:
+#           file: Dockerfile
+#           version_name: LITESTREAM_VERSION
+#           repo: benbjohnson/litestream
+#           tag: true
 
   reviewdog-memos:
     runs-on: ubuntu-latest
