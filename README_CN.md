@@ -1,6 +1,6 @@
 # memos-litestream
 
-[English](README.md) | [中文](README_CN.md)
+[English](README.md) | 中文
 
 ✍️ 使用 litestream 运行 memos 二进制文件。不仅可以在 fly.io 上运行，还可以在本地运行。
 > 如果您想要直接在 fly.io 上运行，请访问 https://github.com/hu3rror/memos-on-fly
