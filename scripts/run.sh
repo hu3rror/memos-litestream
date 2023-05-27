@@ -13,4 +13,4 @@ fi
 echo "Starting litestream & memos service."
 
 # Run litestream with your app as the subprocess.
-exec litestream replicate -exec "memos --mode prod --port 5230"
+exec litestream replicate -exec "memos"

@@ -16,9 +16,9 @@ ARG TARGETARCH
 
 # Get memos binary
 RUN if [ "${TESTING}" = "1" ]; then \
-        wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/main/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
+    wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/main/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
     else \
-        wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
+    wget -q -O /tmp/memos.zip https://nightly.link/usememos/memos/workflows/build-artifacts/release%2F${MEMOS_VERSION}/memos-binary-ubuntu-latest-${TARGETARCH}.zip; \
     fi \ 
     && unzip /tmp/memos.zip \
     && mv "memos--${TARGETARCH}" /usr/local/bin/memos \
@@ -57,6 +57,10 @@ COPY etc/litestream.yml /etc/litestream.yml
 # Copy startup script and make it executable.
 COPY scripts/run.sh /usr/local/bin/run.sh
 RUN chmod a+x /usr/local/bin/run.sh
+
+# Define memos ENV
+ENV MEMOS_MODE="prod"
+ENV MEMOS_PORT="5230"
 
 # Run memos with litestream
 CMD ["run.sh"]
