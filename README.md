@@ -1,4 +1,7 @@
 # memos-litestream
+
+[English](README.md) | [中文](README_CN.md)
+
 ✍️ Run memos binary with litestream. Not only available on fly.io, you can run it locally.
 > If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly
 
@@ -15,7 +18,7 @@ This project is based on [usememos/memos](https://github.com/usememos/memos) and
 ## RUN
 > The image supports AMD64/ARM64
 
-!!! **Be sure to edit the environment variables first** !!!
+!!! **Make sure to edit the environment variables before running** !!!
 
 ```shell
 docker run -d ghcr.io/hu3rror/memos-litestream:latest \
@@ -47,7 +50,7 @@ Your data is store in `~/.memos`.
 
 If you delete your data by mistake, you can just restart your docker container, and your database file will be downloaded automatically from your S3/B2 Bucket.
 
-BUT! This project **does not support** backing up and restoring your **local resources** (your photos, etc.)!
+BUT! This project **does not support** backing up and restoring your **local resources** (your photos, etc.)! Recommended for use with memos' built-in external resource libraries (local resource library is not recommended)
 
 ## Development
 
@@ -62,4 +65,4 @@ docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
 
 ## Plan
-- Support backing up local resource. 
+- Support backing up local resource. (No Guarantee)
