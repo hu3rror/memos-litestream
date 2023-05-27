@@ -7,7 +7,7 @@ FROM docker.io/alpine:${ALPINE_TAG} AS builder
 RUN apk add --no-cache unzip wget
 
 # Define apps version
-ARG MEMOS_VERSION=0.13.0
+ARG MEMOS_VERSION=0.13.1
 ARG LITESTREAM_VERSION=v0.3.9
 ARG TESTING
 
