@@ -63,6 +63,3 @@ cd memos-litestream
 # 修改内容
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
-
-## 计划
-- 支持备份本地资源。（也许最近，也许不会支持）

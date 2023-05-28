@@ -1,6 +1,6 @@
 # memos-litestream
 
-English | [中文](README_CN.md)
+English | [中文](README_zh-CN.md)
 
 ✍️ Run memos binary with litestream. Not only available on fly.io, you can run it locally.
 > If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly
@@ -63,6 +63,3 @@ cd memos-litestream
 # modify something
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
-
-## Plan
-- Support backing up local resource. (No Guarantee)
