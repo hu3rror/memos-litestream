@@ -1,5 +1,5 @@
 dbs:
-  - path: $DB_PATH
+  - path: /var/opt/memos/memos_prod.db
     replicas:
       - type: s3
         bucket: $LITESTREAM_REPLICA_BUCKET

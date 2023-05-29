@@ -8,7 +8,6 @@ services:
     volumes:
       - ~/.memos/:/var/opt/memos
     environment:
-      - DB_PATH=/var/opt/memos/memos_prod.db  # do not change
       - LITESTREAM_REPLICA_PATH=memos_prod.db  # It's better not to change
       - LITESTREAM_REPLICA_BUCKET=xxxxxxxxx  # change to your litestream bucket name
       - LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com  # change to your litestream endpoint url

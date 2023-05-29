@@ -25,7 +25,6 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 --name memos \
 -p 5230:5230 \
 -v ~/.memos/:/var/opt/memos \
---env DB_PATH=/var/opt/memos/memos_prod.db \
 --env LITESTREAM_REPLICA_PATH=memos_prod.db \
 --env LITESTREAM_REPLICA_BUCKET=xxxxxxxxx \
 --env LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
@@ -35,8 +34,7 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 
 或者使用本仓库中的 [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/main/docker-compose.yml) 文件。
 
-### 不建议修改
-- `DB_PATH`
+### 保持默认即可
 - `LITESTREAM_REPLICA_PATH`
 
 ### 必须在运行前编辑
@@ -46,11 +44,11 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 - `LITESTREAM_SECRET_ACCESS_KEY`：您的 S3/B2 密钥
 
 ## 注意事项
-您的数据存储在本机/服务器的 `~/.memos/` 目录中。
+数据库文件默认在本机/服务器的 `~/.memos/` 目录中。
 
-如果您误删了数据，只需重启 Docker 容器，数据库文件就会自动从 S3/B2 存储桶中下载。
+如果您误删了数据库文件，只需重启 Docker 容器，便会自动从 S3/B2 存储桶中重新下载数据库文件。
 
-但是！该项目不支持备份和恢复您的本地资源（例如照片等），建议搭配 memos 自带的外部资源库功能使用 (不建议使用本地资源库)
+但是！该项目不支持备份和恢复您的本地资源（例如照片等），建议搭配 memos 自带的外部资源库功能使用 (个人不建议在云服务器上使用本地资源库)
 
 ## 开发
 

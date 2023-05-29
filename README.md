@@ -25,7 +25,6 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 --name memos \
 -p 5230:5230 \
 -v ~/.memos/:/var/opt/memos \
---env DB_PATH=/var/opt/memos/memos_prod.db \
 --env LITESTREAM_REPLICA_PATH=memos_prod.db \
 --env LITESTREAM_REPLICA_BUCKET=xxxxxxxxx \
 --env LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
@@ -35,8 +34,7 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 
 or use [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/main/docker-compose.yml) in this repo.
 
-### It's better not to modify
-- `DB_PATH`
+### Keep the default
 - `LITESTREAM_REPLICA_PATH`
 
 ### Must edit before running
@@ -50,7 +48,7 @@ Your data is store in `~/.memos`.
 
 If you delete your data by mistake, you can just restart your docker container, and your database file will be downloaded automatically from your S3/B2 Bucket.
 
-BUT! This project **does not support** backing up and restoring your **local resources** (your photos, etc.)! Recommended for use with memos' built-in external resource libraries (local resource library is not recommended)
+BUT! This project **does not support** backing up and restoring your **local resources** (your photos etc.)! Recommended for use with memos' built-in external resource libraries (It is not recommended to use local resource on Cloud VM. )
 
 ## Development
 

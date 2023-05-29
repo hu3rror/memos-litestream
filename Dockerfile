@@ -41,9 +41,6 @@ RUN apt-get update \
 COPY --from=builder /usr/local/bin/memos /usr/local/bin/memos
 COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
 
-# Set timezone
-ENV TZ="UTC"
-
 # Directory to store the data, which can be referenced as the mounting point.
 RUN mkdir -p /var/opt/memos
 VOLUME /var/opt/memos
@@ -59,6 +56,7 @@ COPY scripts/run.sh /usr/local/bin/run.sh
 RUN chmod a+x /usr/local/bin/run.sh
 
 # Define memos ENV
+ENV TZ="UTC"
 ENV MEMOS_MODE="prod"
 ENV MEMOS_PORT="5230"
 
