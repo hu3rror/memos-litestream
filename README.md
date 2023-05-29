@@ -49,7 +49,7 @@ or use [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/mai
 For more information about litestream, please see https://litestream.io/getting-started/
 
 ## Notes
-Your data is store in `~/.memos`.
+Your data is store in `~/.memos` by default.
 
 If you delete your data by mistake, you can just restart your docker container, and your database file will be downloaded automatically from your S3/B2 Bucket.
 
