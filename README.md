@@ -2,8 +2,11 @@
 
 English | [中文](README_zh-CN.md)
 
-✍️ Run memos binary with litestream. The refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). Not only available on fly.io, you can run it locally.
-> If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly
+✍️ Use litestream to automatically backup and restore memos' SQLite database to B2/S3 Bucket. This project is a refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). feel free to use this project! 
+
+> If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly ✈️
+> 
+> The Docker image is not only available on fly.io, you can also run it locally.
 
 This project is based on [usememos/memos](https://github.com/usememos/memos) and [litestream](https://github.com/benbjohnson/litestream). Thank you very much! ✨
 
