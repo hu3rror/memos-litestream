@@ -3,7 +3,7 @@
 [English](README.md) | 中文
 
 ✍️ 使用 litestream 自动备份还原 memos 的 SQLite 数据库到 B2/S3 Bucket。这个项目是 [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build) 的重构版本，欢迎使用本项目！
-> 如果您想要直接在 fly.io 上运行，请访问 https://github.com/hu3rror/memos-on-fly 查看教程，以下教程是基于本地/服务器上运行
+> 如果您想要在 fly.io 上搭建运行，请访问 https://github.com/hu3rror/memos-on-fly 查看教程，本页面的教程是基于本地/服务器上运行的。
 
 该项目基于 [usememos/memos](https://github.com/usememos/memos) 和 [litestream](https://github.com/benbjohnson/litestream) 。非常感谢！✨
 
