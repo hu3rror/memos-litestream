@@ -2,7 +2,7 @@
 
 English | [中文](README_zh-CN.md)
 
-✍️ Use litestream to automatically backup and restore memos' SQLite database to B2/S3 Bucket. This project is a refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). feel free to use this project! 
+✍️ Use litestream to automatically backup and restore memos' SQLite database to B2/S3 Bucket. This project is a refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). Feel free to use this project! 🆓
 
 > If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly ✈️
 > 
