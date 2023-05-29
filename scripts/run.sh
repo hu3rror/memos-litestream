@@ -13,4 +13,4 @@ fi
 echo "Starting litestream & memos service."
 
 # Run litestream with your app as the subprocess.
-exec litestream replicate -exec "memos"
+exec litestream replicate -exec "./memos"
