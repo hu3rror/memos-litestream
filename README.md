@@ -46,6 +46,8 @@ or use [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/mai
 - `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access-key-id
 - `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 secret-access-key
 
+For more information about litestream, please see https://litestream.io/getting-started/
+
 ## Notes
 Your data is store in `~/.memos`.
 
