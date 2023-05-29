@@ -43,6 +43,8 @@ docker run -d ghcr.io/hu3rror/memos-litestream:latest \
 - `LITESTREAM_ACCESS_KEY_ID`：您的 S3/B2 访问密钥 ID
 - `LITESTREAM_SECRET_ACCESS_KEY`：您的 S3/B2 密钥
 
+更多关于 Litestream 的参考信息，请查看 https://litestream.io/getting-started/
+
 ## 注意事项
 数据库文件默认在本机/服务器的 `~/.memos/` 目录中。
 
