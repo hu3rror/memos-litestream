@@ -51,8 +51,8 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          platforms: linux/amd64, linux/arm64
-          build-args: TESTING=1
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: MEMOS_IMAGE_TAG=test
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
