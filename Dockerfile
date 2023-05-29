@@ -57,6 +57,7 @@ RUN chmod a+x /usr/local/bin/run.sh
 
 # Define memos ENV
 ENV TZ="UTC"
+ENV DB_PATH="/var/opt/memos/memos_prod.db"
 ENV MEMOS_MODE="prod"
 ENV MEMOS_PORT="5230"
 

@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-DB_PATH=/var/opt/memos/memos_prod.db
-
 # Restore the database if it does not already exist.
 if [ -f "$DB_PATH" ]; then
 	echo "Database exists, skipping restore."
