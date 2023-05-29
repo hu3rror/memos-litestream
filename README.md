@@ -2,21 +2,21 @@
 
 English | [中文](README_zh-CN.md)
 
-✍️ Run memos binary with litestream. Not only available on fly.io, you can run it locally.
+✍️ Run memos binary with litestream. The refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). Not only available on fly.io, you can run it locally.
 > If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly
 
-This project is based on [usememos/memos](https://github.com/usememos/memos) and the build-artifacts binary download link conversion service is provided by [nightly.link](https://github.com/oprypin/nightly.link). Thank you very much! ✨
+This project is based on [usememos/memos](https://github.com/usememos/memos) and [litestream](https://github.com/benbjohnson/litestream). Thank you very much! ✨
 
 ## Prerequisites
 - Docker
-- S3 / [BackBlaze B2](https://www.backblaze.com/) account (The default template is B2-based)
-  -  To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and get bucket name / endpoint url
-  -  To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and get access-key-id / secret-access-key 
+- [BackBlaze B2](https://www.backblaze.com/) / S3-compatible account (The default template is B2-based)
+  -  To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and you can get *bucket name* / *endpoint url*
+  -  To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and you can get *access-key-id* / *secret-access-key* 
 
 ## Installation
 
 ## RUN
-> The image supports AMD64/ARM64
+> The image supports linux/amd64, linux/arm64, linux/arm/v7
 
 !!! **Make sure to edit the environment variables before running** !!!
 
@@ -50,13 +50,10 @@ If you delete your data by mistake, you can just restart your docker container, 
 
 BUT! This project **does not support** backing up and restoring your **local resources** (your photos etc.)! Recommended for use with memos' built-in external resource libraries (It is not recommended to use local resource on Cloud VM. )
 
-## Development
+## Development and build
 
 ```shell
 git clone https://github.com/hu3rror/memos-litestream.git
-```
-
-```shell
 cd memos-litestream
 # modify something
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
