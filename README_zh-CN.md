@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-✍️ 使用 litestream 运行 memos 二进制文件。不仅可以在 fly.io 上运行，还可以在本地运行。
+✍️ 使用 litestream 自动备份还原 memos 的 SQLite 数据库到 B2/S3 Bucket。
 > 如果您想要直接在 fly.io 上运行，请访问 https://github.com/hu3rror/memos-on-fly
 
 该项目基于 [usememos/memos](https://github.com/usememos/memos)，构建二进制文件下载链接转换服务由 [nightly.link](https://github.com/oprypin/nightly.link) 提供。非常感谢！✨
