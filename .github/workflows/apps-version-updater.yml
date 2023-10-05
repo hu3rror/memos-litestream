@@ -21,7 +21,7 @@ jobs:
   reviewdog-memos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: reviewdog/action-depup/with-pr@master
         id: depup-memos
