@@ -21,7 +21,7 @@
 !!! **运行请务必先编辑环境变量** !!!
 
 ```shell
-docker run -d ghcr.io/hu3rror/memos-litestream:latest \
+docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 --name memos \
 -p 5230:5230 \
 -v ~/.memos/:/var/opt/memos \
