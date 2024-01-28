@@ -53,7 +53,7 @@ jobs:
             hu3rror/memos-litestream
             ghcr.io/hu3rror/memos-litestream
           tags: |
-            type=raw,value=latest
+            type=raw,value=stable
             type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
 
