@@ -24,7 +24,7 @@ This project is based on [usememos/memos](https://github.com/usememos/memos) and
 !!! **Make sure to edit the environment variables before running** !!!
 
 ```shell
-docker run -d ghcr.io/hu3rror/memos-litestream:latest \
+docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 --name memos \
 -p 5230:5230 \
 -v ~/.memos/:/var/opt/memos \
