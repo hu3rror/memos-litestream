@@ -1,4 +1,4 @@
-name: get-build-release-artifacts-and-push-image
+name: get-build-stable-artifacts-and-push-image
 
 on:
   push:
@@ -54,7 +54,6 @@ jobs:
             ghcr.io/hu3rror/memos-litestream
           tags: |
             type=raw,value=stable
-            type=raw,value=latest
             type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
 
