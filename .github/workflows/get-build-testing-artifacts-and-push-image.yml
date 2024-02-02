@@ -44,6 +44,7 @@ jobs:
             ghcr.io/hu3rror/memos-litestream
           tags: |
             type=raw,value=testing
+            type=raw,value=test
 
       - name: Build and Push
         id: docker_build
