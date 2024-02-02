@@ -1,7 +1,9 @@
 version: '3.3'
 services:
   memos:
-    image: ghcr.io/hu3rror/memos-litestream:latest
+    image: ghcr.io/hu3rror/memos-litestream:stable
+    #image: ghcr.io/hu3rror/memos-litestream:latest
+    #image: ghcr.io/hu3rror/memos-litestream:test
     container_name: memos
     ports:
       - 5230:5230
