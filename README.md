@@ -19,7 +19,7 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 
 ## Installation
 
-## RUN
+### RUN
 
 > The image supports linux/amd64, linux/arm64, linux/arm/v7
 >
