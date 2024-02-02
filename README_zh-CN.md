@@ -18,6 +18,8 @@
 
 ## 运行
 > 该镜像支持 linux/amd64、linux/arm64、linux/arm/v7
+> 
+> `stable`、`latest`、`test` 是可用的 Docker 镜像标签。
 
 !!! **在运行之前务必编辑环境变量** !!!
 
@@ -35,7 +37,6 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 
 或者使用存储库中的 [docker-compose.yml](./docker-compose.yml)。
 
-> `stable`、`latest`、`test` 是可用的 Docker 镜像标签。
 
 ### 保留默认设置
 - `LITESTREAM_REPLICA_PATH`

@@ -20,6 +20,8 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 
 ## RUN
 > The image supports linux/amd64, linux/arm64, linux/arm/v7
+> 
+> `stable`, `latest`, `test` are accessible docker image tags.
 
 !!! **Ensure to modify the environment variables before execution** !!!
 
@@ -36,8 +38,6 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 ```
 
 or utilize [docker-compose.yml](./docker-compose.yml) in the repository.
-
-> `stable`, `latest`, `test` are accessible docker image tags.
 
 ### Retain the default
 - `LITESTREAM_REPLICA_PATH`
