@@ -54,8 +54,8 @@ jobs:
             ghcr.io/hu3rror/memos-litestream
           tags: |
             type=raw,value=stable
-            # type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
+            type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
+            # type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
 
       - name: Build and Push
         id: docker_build
