@@ -35,7 +35,9 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 --env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0
 ```
 
-or use [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/main/docker-compose.yml) in this repo.
+or use [docker-compose.yml](./docker-compose.yml) in the repo.
+
+> `stable`, `latest`, `test` are available docker image tags.
 
 ### Keep the default
 - `LITESTREAM_REPLICA_PATH`
