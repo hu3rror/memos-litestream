@@ -2,23 +2,24 @@
 
 [English](README.md) | 中文
 
-✍️ 使用 litestream 自动备份还原 memos 的 SQLite 数据库到 B2/S3 Bucket。这个项目是 [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build) 的重构版本，欢迎使用本项目！
-> 如果您想要在 fly.io 上搭建运行，请访问 https://github.com/hu3rror/memos-on-fly 查看教程，本页面的教程是基于本地/服务器上运行的。
+> 如果你想在 fly.io 上直接运行，请访问 https://github.com/hu3rror/memos-on-fly ✈️
+> 
+> Docker 镜像不仅在 fly.io 上可用，你也可以在本地运行它。
 
-该项目基于 [usememos/memos](https://github.com/usememos/memos) 和 [litestream](https://github.com/benbjohnson/litestream) 。非常感谢！✨
+该项目基于 [usememos/memos](https://github.com/usememos/memos) 和 [litestream](https://github.com/benbjohnson/litestream)。非常感谢！✨
 
-## 前提条件
+## 先决条件
 - Docker
-- [BackBlaze B2](https://www.backblaze.com/) 或其他兼容 S3 API 服务的账户（默认模板基于 B2）
-  - 创建 [BackBlaze B2 存储桶](https://litestream.io/guides/backblaze/#create-a-bucket) 并获取存储桶名称 Bucket name 和 endpoint url 
-  - 创建 [BackBlaze B2 用户](https://litestream.io/guides/backblaze/#create-a-user) 并获取 ACCESS KEY ID 和 SECRET ACCESS KEY
+- [BackBlaze B2](https://www.backblaze.com/) / S3 兼容账户（默认模板是基于 B2 的）
+  -  [创建 BackBlaze B2 存储桶](https://litestream.io/guides/backblaze/#create-a-bucket) 并获取 *Bucket Name* / *Endpoint URL*
+  -  [创建 BackBlaze B2 用户](https://litestream.io/guides/backblaze/#create-a-user) 并获取 *ACCESS KEY ID* / *SECRET ACCESS KEY* 
 
 ## 安装
 
 ## 运行
-> 该镜像支持 linux/amd64, linux/arm64, linux/arm/v7
+> 该镜像支持 linux/amd64、linux/arm64、linux/arm/v7
 
-!!! **运行请务必先编辑环境变量** !!!
+!!! **在运行之前务必编辑环境变量** !!!
 
 ```shell
 docker run -d ghcr.io/hu3rror/memos-litestream:stable \
@@ -32,31 +33,33 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 --env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0
 ```
 
-或者使用本仓库中的 [docker-compose.yml](https://github.com/hu3rror/memos-litestream/blob/main/docker-compose.yml) 文件。
+或者使用存储库中的 [docker-compose.yml](./docker-compose.yml)。
 
-### 保持默认即可
+> `stable`、`latest`、`test` 是可用的 Docker 镜像标签。
+
+### 保留默认设置
 - `LITESTREAM_REPLICA_PATH`
 
-### 必须在运行前编辑
-- `LITESTREAM_REPLICA_BUCKET`：将其修改为您的 S3/B2 存储桶名称
-- `LITESTREAM_REPLICA_ENDPOINT`：将其修改为您的 S3/B2端点 URL
-- `LITESTREAM_ACCESS_KEY_ID`：您的 S3/B2 访问密钥 ID
-- `LITESTREAM_SECRET_ACCESS_KEY`：您的 S3/B2 密钥
+### 运行前必须编辑
+- `LITESTREAM_REPLICA_BUCKET`：修改为你的 S3/B2 存储桶名称
+- `LITESTREAM_REPLICA_ENDPOINT`：修改为你的 S3/B2 终端点 URL
+- `LITESTREAM_ACCESS_KEY_ID`：你的 S3/B2 访问密钥 ID
+- `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 秘密访问密钥
 
-更多关于 Litestream 的参考信息，请查看 https://litestream.io/getting-started/
+有关 litestream 的更多信息，请参阅 https://litestream.io/getting-started/
 
 ## 注意事项
-数据库文件默认在本机/服务器的 `~/.memos/` 目录中。
+你的数据默认存储在 `~/.memos` 中。
 
-如果您误删了数据库文件，只需重启 Docker 容器，便会自动从 S3/B2 存储桶中重新下载数据库文件。
+如果不小心删除了数据，只需重新启动 Docker 容器，数据库文件将自动从你的 S3/B2 存储桶下载。
 
-但是！该项目不支持备份和恢复您的本地资源（例如照片等），建议搭配 memos 自带的外部资源库功能使用 (个人不建议在没有额外备份手段的前提下在云服务器上使用本地资源库功能)
+但是！该项目**不支持**备份和还原你的**本地资源**（例如照片等）！建议与 memos 的内置外部资源库一起使用（不建议在云 VM 上使用本地资源）。
 
-## 开发与构建
+## 开发和构建
 
 ```shell
 git clone https://github.com/hu3rror/memos-litestream.git
 cd memos-litestream
-# 修改内容
+# 根据需要进行修改
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```

@@ -2,26 +2,26 @@
 
 English | [中文](README_zh-CN.md)
 
-✍️ Use litestream to automatically backup and restore memos' SQLite database to B2/S3 Bucket. This project is a refactored version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). Feel free to use this project! 🆓
+Utilize litestream for the automatic backup and restoration of the SQLite database of memos to a B2/S3 Bucket. This initiative represents a restructured iteration of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build). Feel free to employ this undertaking at your convenience.
 
-> If you wanna run on fly.io directly, please visit https://github.com/hu3rror/memos-on-fly ✈️
+> To directly execute on fly.io, kindly refer to https://github.com/hu3rror/memos-on-fly ✈️
 > 
-> The Docker image is not only available on fly.io, you can also run it locally.
+> The Docker image is accessible not only on fly.io but also for local execution.
 
-This project is based on [usememos/memos](https://github.com/usememos/memos) and [litestream](https://github.com/benbjohnson/litestream). Thank you very much! ✨
+This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos) and [litestream](https://github.com/benbjohnson/litestream). Much appreciation! ✨
 
 ## Prerequisites
 - Docker
 - [BackBlaze B2](https://www.backblaze.com/) / S3-compatible account (The default template is B2-based)
-  -  To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and you can get *bucket name* / *endpoint url*
-  -  To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and you can get *access-key-id* / *secret-access-key* 
+  -  To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and acquire the *bucket name* / *endpoint url*
+  -  To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and obtain the *access-key-id* / *secret-access-key* 
 
 ## Installation
 
 ## RUN
 > The image supports linux/amd64, linux/arm64, linux/arm/v7
 
-!!! **Make sure to edit the environment variables before running** !!!
+!!! **Ensure to modify the environment variables before execution** !!!
 
 ```shell
 docker run -d ghcr.io/hu3rror/memos-litestream:stable \
@@ -35,33 +35,33 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 --env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0
 ```
 
-or use [docker-compose.yml](./docker-compose.yml) in the repo.
+or utilize [docker-compose.yml](./docker-compose.yml) in the repository.
 
-> `stable`, `latest`, `test` are available docker image tags.
+> `stable`, `latest`, `test` are accessible docker image tags.
 
-### Keep the default
+### Retain the default
 - `LITESTREAM_REPLICA_PATH`
 
-### Must edit before running
-- `LITESTREAM_REPLICA_BUCKET`: Modify to your S3/B2 bucket name
-- `LITESTREAM_REPLICA_ENDPOINT`: Modify to your S3/B2 endpoint url
+### Essential modifications before execution
+- `LITESTREAM_REPLICA_BUCKET`: Adjust to your S3/B2 bucket name
+- `LITESTREAM_REPLICA_ENDPOINT`: Adjust to your S3/B2 endpoint url
 - `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access-key-id
 - `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 secret-access-key
 
-For more information about litestream, please see https://litestream.io/getting-started/
+For additional insights into litestream, please consult https://litestream.io/getting-started/
 
 ## Notes
-Your data is store in `~/.memos` by default.
+Your data is stored in `~/.memos` by default.
 
-If you delete your data by mistake, you can just restart your docker container, and your database file will be downloaded automatically from your S3/B2 Bucket.
+In the event of accidental data deletion, restarting the docker container will trigger automatic downloading of the database file from your S3/B2 Bucket.
 
-BUT! This project **does not support** backing up and restoring your **local resources** (your photos etc.)! Recommended for use with memos' built-in external resource libraries (It is not recommended to use local resource on Cloud VM. )
+However, please note that this initiative **does not facilitate** the backup and restoration of your **local resources** (e.g., photos). It is recommended to use memos' built-in external resource libraries instead (Using local resources on a Cloud VM is not advisable.)
 
 ## Development and build
 
 ```shell
 git clone https://github.com/hu3rror/memos-litestream.git
 cd memos-litestream
-# modify something
+# modify as necessary
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
