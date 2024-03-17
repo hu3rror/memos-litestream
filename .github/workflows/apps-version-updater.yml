@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: reviewdog/action-depup/with-pr@v1.4.10
+      - uses: reviewdog/action-depup/with-pr@v1.4.12
         id: depup-memos
         with:
           file: Dockerfile
