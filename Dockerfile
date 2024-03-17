@@ -22,5 +22,5 @@ RUN chmod +x /usr/local/memos/run.sh
 # Define ENV
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 
-# Run memos with litestream
+# Run memos with litestream (Default WORKDIR is `/usr/local/memos/`)
 CMD ["./run.sh"]
