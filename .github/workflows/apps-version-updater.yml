@@ -8,7 +8,7 @@ jobs:
 #   reviewdog-litestream:
 #     runs-on: ubuntu-latest
 #     steps:
-#       - uses: actions/checkout@v3
+#       - uses: actions/checkout@v4
 
 #       - uses: reviewdog/action-depup/with-pr@master
 #         id: depup-litestream
@@ -23,7 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: reviewdog/action-depup/with-pr@v1.4.12
-        id: depup-memos
         with:
           file: Dockerfile
           version_name: MEMOS_IMAGE_TAG
@@ -35,7 +34,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: reviewdog/action-depup/with-pr@v1.4.12
-        id: depup-memos-with-memogram
         with:
           file: Dockerfile.memogram
           version_name: MEMOS_IMAGE_TAG
@@ -47,7 +45,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: reviewdog/action-depup/with-pr@v1.4.12
-        id: depup-memogram
         with:
           file: Dockerfile.memogram
           version_name: MEMOGRAM_TAG
