@@ -1,0 +1,2 @@
+memos: ./run.sh
+memogram: sleep 5 && ./memogram
