@@ -16,11 +16,11 @@ COPY --from=package /usr/local/bin/litestream /usr/local/bin/litestream
 COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup script and make it executable.
-COPY scripts/run.sh /usr/local/memos/run.sh
-RUN chmod +x /usr/local/memos/run.sh
+COPY scripts/run-memos-with-litestream.sh /usr/local/memos/run-memos-with-litestream.sh
+RUN chmod +x /usr/local/memos/run-memos-with-litestream.sh
 
 # Define ENV
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 
 # Run memos with litestream (Default WORKDIR is `/usr/local/memos/`)
-CMD ["./run.sh"]
+CMD ["./run-memos-with-litestream.sh"]

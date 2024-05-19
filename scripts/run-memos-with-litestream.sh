@@ -10,7 +10,6 @@ else
 	echo "Finished restoring the database."
 fi
 
-echo "Starting litestream & memos service."
-
 # Run litestream with your app as the subprocess.
+echo "Starting litestream & memos service."
 exec litestream replicate -exec "./memos"

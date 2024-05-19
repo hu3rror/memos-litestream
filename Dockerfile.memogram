@@ -1,0 +1,82 @@
+# Set the Litestream image tag
+ARG LITESTREAM_IMAGE_TAG=0.3.13
+# Set the Memos image tag
+ARG MEMOS_IMAGE_TAG=0.22.0
+
+# Build Litestream
+FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS litestream_upstream
+# Set the entry point to an empty array
+ENTRYPOINT []
+
+# Build Memos
+FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS memos_upstream
+# Set the entry point to an empty array
+ENTRYPOINT []
+
+# Final image
+FROM ubuntu:latest as final
+# Set the working directory to /usr/local/memos
+WORKDIR /usr/local/memos
+
+# Update apt and install necessary software
+RUN apt-get update && apt-get install -y wget tzdata tmux curl bash
+# Set the timezone to UTC
+ENV TZ="UTC"
+
+# Copy Memos to /usr/local/memos
+COPY --from=memos_upstream /usr/local/memos/ /usr/local/memos/
+
+# Copy Litestream to /usr/local/bin
+COPY --from=litestream_upstream /usr/local/bin/litestream /usr/local/bin/litestream
+
+# Set the target architecture
+ARG TARGETARCH
+
+# Download Memogram
+ENV MEMOGRAM_TAG=0.1.1
+RUN wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+    tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+    rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
+    chown root:root /usr/local/memos/memogram && \
+    chmod +x /usr/local/memos/memogram
+
+# Download overmind
+ENV OVERMIND_VERSION=2.5.1
+RUN wget https://github.com/DarthSim/overmind/releases/download/v${OVERMIND_VERSION}/overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH}.gz && \
+    gzip -d overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH}.gz && \
+    mv overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH} overmind && \
+    chmod +x overmind
+
+# Copy Memogram environment file
+COPY etc/memogram.env /usr/local/memos/.env
+
+# Copy Litestream global configuration file
+COPY etc/litestream.yml /etc/litestream.yml
+
+# Copy memos script and make it executable
+COPY scripts/run-memos-with-litestream.sh /usr/local/memos/run-memos-with-litestream.sh
+RUN chmod +x /usr/local/memos/run-memos-with-litestream.sh
+
+# Copy Memogram script and make it executable
+COPY scripts/run-memogram.sh /usr/local/memos/run-memogram.sh
+RUN chmod +x /usr/local/memos/run-memogram.sh
+
+# Copy overmind configuration file
+COPY etc/Procfile /usr/local/memos/Procfile
+
+# Define environment variables
+ENV DB_PATH="/var/opt/memos/memos_prod.db"
+
+# Expose port 5230
+EXPOSE 5230
+
+# Create a directory to store data, which can be referenced as the mounting point
+RUN mkdir -p /var/opt/memos
+VOLUME /var/opt/memos
+
+# Set Memos mode to "prod" and port to 5230
+ENV MEMOS_MODE="prod"
+ENV MEMOS_PORT="5230"
+
+# Run Memos with Litestream (Default WORKDIR is `/usr/local/memos/`)
+CMD ["./overmind", "start", "-f", "/usr/local/memos/Procfile"]
