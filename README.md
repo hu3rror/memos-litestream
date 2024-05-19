@@ -21,9 +21,9 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 
 ### RUN
 
-> The image supports linux/amd64, linux/arm64, linux/arm/v7
+> The image supports linux/amd64, linux/arm64
 >
-> `stable`, `latest`, `test` are accessible docker image tags.
+> `stable`, `latest`, `test`, `stable-memogram` are accessible docker image tags. `stable-memogram` integrates the function of being sent to Memos by telegram bot, you need to customize the MEMOGRAM_BOT_TOKEN environment variable before using it, go to https://github.com/usememos/telegram-integration to get more details.
 
 !!! **Ensure to modify the environment variables before execution** !!!
 
