@@ -10,17 +10,6 @@ else
 	echo "Finished restoring the database."
 fi
 
-# Replace MEMOGRAM_BOT_TOKEN in .env
-if [ -f "./memogram" ] && [ -f "./.env" ] && [ -n "$MEMOGRAM_BOT_TOKEN" ]; then
-	# Replace MEMOGRAM_BOT_TOKEN in .env
-	sed -i 's/<MEMOGRAM_BOT_TOKEN>/'"$MEMOGRAM_BOT_TOKEN"'/g' ./.env
-
-	# Replace MEMOS_PORT in .env
-	if [ "$MEMOS_PORT" != "5230" ]; then
-		sed -i 's/5230/'"$MEMOS_PORT"'/g' ./.env
-	fi
-fi
-
 # Run litestream with your app as the subprocess.
 echo "Starting litestream & memos service."
 exec litestream replicate -exec "./memos"

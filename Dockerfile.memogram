@@ -53,9 +53,13 @@ COPY etc/memogram.env /usr/local/memos/.env
 # Copy Litestream global configuration file
 COPY etc/litestream.yml /etc/litestream.yml
 
-# Copy startup script and make it executable
-COPY scripts/run.sh /usr/local/memos/run.sh
-RUN chmod +x /usr/local/memos/run.sh
+# Copy memos script and make it executable
+COPY scripts/run-memos-with-litestream.sh /usr/local/memos/run-memos-with-litestream.sh
+RUN chmod +x /usr/local/memos/run-memos-with-litestream.sh
+
+# Copy Memogram script and make it executable
+COPY scripts/run-memogram.sh /usr/local/memos/run-memogram.sh
+RUN chmod +x /usr/local/memos/run-memogram.sh
 
 # Copy overmind configuration file
 COPY etc/Procfile /usr/local/memos/Procfile

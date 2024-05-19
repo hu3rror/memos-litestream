@@ -1,2 +1,2 @@
-memos: ./run.sh
-memogram: sleep 5 && ./memogram
+memos: ./run-memos-with-litestream.sh
+memogram: sleep 5 && ./run-memogram.sh
