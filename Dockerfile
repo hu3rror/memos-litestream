@@ -2,15 +2,18 @@ ARG LITESTREAM_IMAGE_TAG=0.3.13
 ARG MEMOS_IMAGE_TAG=0.22.0
 
 # Build litestream
-FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS package
+FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS litestream_package
 ENTRYPOINT []
 
 # Build memos
 FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS production
 ENTRYPOINT []
 
+# Set working directory
+WORKDIR /usr/local/memos
+
 # Copy litestream to /usr/local/bin
-COPY --from=package /usr/local/bin/litestream /usr/local/bin/litestream
+COPY --from=litestream_package /usr/local/bin/litestream /usr/local/bin/litestream
 
 # Copy litestream global configuration file
 COPY etc/litestream.yml /etc/litestream.yml
