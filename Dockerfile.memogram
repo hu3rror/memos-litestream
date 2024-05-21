@@ -25,7 +25,8 @@ COPY etc/memogram.env /usr/local/memos/.env
 
 # Add overmind
 ENV OVERMIND_VERSION=2.5.1
-RUN wget https://github.com/DarthSim/overmind/releases/download/v${OVERMIND_VERSION}/overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH}.gz && \
+RUN apk add --no-cache tmux && \
+    wget https://github.com/DarthSim/overmind/releases/download/v${OVERMIND_VERSION}/overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH}.gz && \
     gzip -d overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH}.gz && \
     mv overmind-v${OVERMIND_VERSION}-linux-${TARGETARCH} overmind && \
     chown root:root ./overmind && \
