@@ -27,15 +27,15 @@ ARG TARGETARCH
 ARG USE_MEMOGRAM=0
 ENV MEMOGRAM_TAG=0.1.1
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
-    apk add --no-cache gcompat procps && \
-    mkdir -p /usr/local/memos/telegram_bot && \
-    wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
-    tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
-    mv memogram /usr/local/memos/telegram_bot/ && \
-    rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
-    chown root:root ./telegram_bot/memogram && \
-    chmod +x ./telegram_bot/memogram && \
-    COPY etc/memogram.env /usr/local/memos/telegram_bot/.env \
+        apk add --no-cache gcompat procps && \
+        mkdir -p /usr/local/memos/telegram_bot && \
+        wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+        tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+        mv memogram /usr/local/memos/telegram_bot/ && \
+        rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
+        chown root:root ./telegram_bot/memogram && \
+        chmod +x ./telegram_bot/memogram && \
+        COPY etc/memogram.env /usr/local/memos/telegram_bot/.env \
     fi
 
 # Define ENV
