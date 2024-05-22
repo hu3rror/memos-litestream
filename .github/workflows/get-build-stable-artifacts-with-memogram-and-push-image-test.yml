@@ -1,4 +1,4 @@
-name: get-build-stable-artifacts-with-memogram-and-push-image
+name: get-build-stable-artifacts-with-memogram-and-push-image-test
 
 on:
   push:
@@ -61,8 +61,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./
-          file: ./Dockerfile.memogram
+          file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            USE_MEMOGRAM=1
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
