@@ -1,8 +1,9 @@
-name: get-build-lastest-artifacts-and-push-image
+name: get-build-stable-artifacts-with-memogram-and-push-image
 
 on:
-  schedule:
-    - cron:  '15 4 * * *'
+  push:
+    paths:
+      - 'Dockerfile'
   workflow_dispatch:
 
 jobs:
@@ -17,13 +18,14 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        if: github.event_name != 'pull_request'
+      - name: Extract build args
+        id: keydb
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          owner: usememos
+          repo: memos
+          excludes: prerelease, draft
+          token: ${{ github.token }}
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -40,19 +42,20 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            hu3rror/memos-litestream
             ghcr.io/hu3rror/memos-litestream
           tags: |
-            type=raw,value=latest
+            type=raw,value=stable-memogram
+            type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}-memogram
 
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: ./
-          file: ./Dockerfile
+          file: ./Dockerfile.memogram
           platforms: linux/amd64,linux/arm64
-          build-args: MEMOS_IMAGE_TAG=latest
+          build-args: |
+            USE_MEMOGRAM=1
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
