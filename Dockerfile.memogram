@@ -40,12 +40,12 @@ COPY --from=litestream_package /usr/local/bin/litestream /usr/local/bin/litestre
 COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup script and make it executable.
-COPY scripts/run-memos-with-litestream.sh /usr/local/memos/run-memos-with-litestream.sh
-RUN chmod +x ./run-memos-with-litestream.sh
+COPY scripts/run.sh /usr/local/memos/run.sh
+RUN chmod +x ./run.sh
 
 # Copy Memogram script and make it executable
-COPY scripts/run-memogram.sh /usr/local/memos/run-memogram.sh
-RUN chmod +x /usr/local/memos/run-memogram.sh
+COPY scripts/memogram.sh /usr/local/memos/memogram.sh
+RUN chmod +x /usr/local/memos/memogram.sh
 
 # Define environment variables
 ENV DB_PATH="/var/opt/memos/memos_prod.db"

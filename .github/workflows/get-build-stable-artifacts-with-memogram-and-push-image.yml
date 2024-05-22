@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'Dockerfile.memogram'
-      - 'scripts/run-memogram.sh'
+      - 'scripts/memogram.sh'
   workflow_dispatch:
 
 jobs:
