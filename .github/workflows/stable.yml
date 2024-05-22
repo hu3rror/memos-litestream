@@ -1,10 +1,8 @@
-name: get-build-stable-artifacts-with-memogram-and-push-image-test
+name: get-build-stable-artifacts-and-push-image
 
 on:
   push:
     paths:
-      - 'Dockerfile.memogram'
-      - 'scripts/memogram.sh'
       - 'Dockerfile'
   workflow_dispatch:
 
@@ -28,12 +26,6 @@ jobs:
           repo: memos
           excludes: prerelease, draft
           token: ${{ github.token }}
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        if: github.event_name != 'pull_request'
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -51,11 +43,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            hu3rror/memos-litestream
             ghcr.io/hu3rror/memos-litestream
           tags: |
-            type=raw,value=stable-memogram-test
-            type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}-memogram-test
+            type=raw,value=stable
+            type=semver,pattern={{version}},value=${{ steps.keydb.outputs.release }}
+            # type=semver,pattern={{major}}.{{minor}},value=${{ steps.keydb.outputs.release }}
 
       - name: Build and Push
         id: docker_build
@@ -64,8 +56,6 @@ jobs:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            USE_MEMOGRAM=1
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
