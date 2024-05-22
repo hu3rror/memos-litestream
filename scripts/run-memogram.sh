@@ -19,5 +19,22 @@ if use_memogram; then
 
 	# Start the memogram service.
 	echo "Starting memogram service."
-	exec ./memogram
+
+	if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
+		timeout=30
+		while [ $timeout -gt 0 ]; do
+			if pgrep -x "memos" >/dev/null; then
+				./memogram
+				break
+			else
+				echo "memos is not running, waiting for 5 seconds before retrying"
+				sleep 5
+				timeout=$((timeout - 5))
+			fi
+		done
+
+		if [ $timeout -eq 0 ]; then
+			echo "over 30 seconds, memos is still not running, exiting"
+		fi
+	fi
 fi
