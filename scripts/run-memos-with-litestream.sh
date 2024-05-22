@@ -16,18 +16,24 @@ if use_litestream; then
     # Check if the database file exists.
     if [ -f "$DB_PATH" ]; then
     	# If the database exists, back it up to the backup directory.
-    	echo "An old local database was found and will be backed up to the $BACKUP_DIR directory."
     	BACKUP_DIR="/var/opt/memos/.backup/$(date +'%Y-%m-%d_%H-%M-%S')"
+    	echo "An old local database was found and will be backed up to the $BACKUP_DIR directory."
     	mkdir -p "$BACKUP_DIR"
-    	mv /var/opt/memos/memos_prod.db* "$BACKUP_DIR"
-	fi
-else
-	# If the database does not exist, attempt to restore it from a replica.
-	echo "No database found, attempt to restore from a replica."
-	litestream restore -if-replica-exists "$DB_PATH"
-	echo "Database restore completed!"
+    	mv "$DB_PATH"* "$BACKUP_DIR"
 
-	# Run Litestream with the Memos service as the subprocess.
-	echo "Starting litestream & memos service."
-	exec litestream replicate -exec "./memos"
+		# Restore the database from the replica.
+		if ! litestream restore -if-replica-exists "$DB_PATH"; then
+			echo "Database restore from replica failed!"
+			echo "Attempting to restore from $BACKUP_DIR..."
+			mv "$BACKUP_DIR/*" "/var/opt/memos/"
+			if ! [ -f "$DB_PATH" ]; then
+				echo "Database restore from backup failed! Exiting..."
+				exit 1
+			fi
+		fi
+	fi
 fi
+
+# Run Litestream with the Memos service as the subprocess.
+echo "Everything looks good. Starting litestream & memos service."
+exec litestream replicate -exec "./memos"
