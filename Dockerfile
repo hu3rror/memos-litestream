@@ -22,21 +22,26 @@ COPY etc/litestream.yml /etc/litestream.yml
 COPY scripts/run.sh /usr/local/memos/run.sh
 RUN chmod +x /usr/local/memos/run.sh
 
-# Copy Memogram environment file
+# Copy memos environment file
+COPY etc/memogram.env /etc/memogram.env
+
+# Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
 ENV MEMOGRAM_TAG=0.1.1
+
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
-        apk add --no-cache gcompat procps && \
-        mkdir -p /usr/local/memos/telegram_bot && \
-        wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
-        tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
-        mv memogram /usr/local/memos/telegram_bot/ && \
-        rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
-        chown root:root ./telegram_bot/memogram && \
-        chmod +x ./telegram_bot/memogram && \
-        COPY etc/memogram.env /usr/local/memos/telegram_bot/.env; \
-    fi
+    apk add --no-cache gcompat procps && \
+    wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+    tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
+    mkdir -p /usr/local/memos/telegram_bot && \
+    mv memogram /usr/local/memos/telegram_bot/ && \
+    mv /etc/memogram.env /usr/local/memos/telegram_bot/.env && \
+    rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
+    chown root:root ./telegram_bot/memogram && \
+    chmod +x ./telegram_bot/memogram \
+fi
+
 # Define ENV
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 ENV MEMOS_PORT="5230"

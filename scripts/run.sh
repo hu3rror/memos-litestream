@@ -11,9 +11,7 @@ use_litestream() {
 }
 
 use_memogram() {
-	[ -n "$MEMOGRAM_BOT_TOKEN" ] &&
-		[ -f "./telegram_bot/memogram" ] &&
-		[ -f "./telegram_bot/.env" ]
+	[ -f "./telegram_bot/memogram" ] && [ -f "./telegram_bot/.env" ]
 }
 
 # Main script logic
