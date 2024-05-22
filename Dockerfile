@@ -35,9 +35,8 @@ RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
         rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
         chown root:root ./telegram_bot/memogram && \
         chmod +x ./telegram_bot/memogram && \
-        COPY etc/memogram.env /usr/local/memos/telegram_bot/.env \
+        COPY etc/memogram.env /usr/local/memos/telegram_bot/.env; \
     fi
-
 # Define ENV
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 ENV MEMOS_PORT="5230"
