@@ -14,7 +14,7 @@ check_litestream_env() {
 if check_litestream_env; then
 	if [ -f "$DB_PATH" ]; then
 		echo "Database exists, skipping restore."
-		echo "Tips: If you want to restore the version of database from S3/B2, please delete the $DB_PATH file and restart."
+		echo "Tips: If you want to restore the latest version of database from S3/B2, please delete the $DB_PATH file and restart."
 		echo "Warning: Deleting the $DB_PATH file may cause data loss. Make sure to backup your database before deleting the $DB_PATH file."
 	else
 		echo "No local database found, attempt to restore the latest version of database from S3/B2."
@@ -24,5 +24,5 @@ if check_litestream_env; then
 fi
 
 # Start Litestream with the Memos service as the subprocess.
-echo "Starting litestream & memos service."
+echo "Starting litestream replicate with the Memos service as the subprocess."
 exec litestream replicate -exec "./memos"
