@@ -17,10 +17,7 @@ if use_memogram; then
 		sed -i 's/5230/'"$MEMOS_PORT"'/g' ./.env
 	fi
 
-	# Start the memogram service.
-	echo "Starting memogram service."
-
-	if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
+	if [ -f "$DB_PATH" ]; then
 		timeout=30
 		while [ $timeout -gt 0 ]; do
 			if pgrep -x "memos" >/dev/null; then

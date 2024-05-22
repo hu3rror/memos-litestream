@@ -4,10 +4,10 @@ set -e
 # Check if the environment variables required for Litestream are set.
 use_litestream() {
 	# Check if all the required environment variables are set.
-	[ -n "$LITESTREAM_REPLICA_BUCKET" ] && \
-	[ -n "$LITESTREAM_REPLICA_PATH" ] && \
-	[ -n "$LITESTREAM_REPLICA_ENDPOINT" ] && \
-	[ -n "$LITESTREAM_ACCESS_KEY_ID" ] && \
+	[ -n "$LITESTREAM_REPLICA_BUCKET" ] &&
+	[ -n "$LITESTREAM_REPLICA_PATH" ] &&
+	[ -n "$LITESTREAM_REPLICA_ENDPOINT" ] &&
+	[ -n "$LITESTREAM_ACCESS_KEY_ID" ] &&
 	[ -n "$LITESTREAM_SECRET_ACCESS_KEY" ]
 }
 
@@ -25,7 +25,7 @@ if use_litestream; then
 		if ! litestream restore -if-replica-exists "$DB_PATH"; then
 			echo "Database restore from replica failed!"
 			echo "Attempting to restore from $BACKUP_DIR..."
-			mv "$BACKUP_DIR/*" "/var/opt/memos/"
+			mv "$BACKUP_DIR/*" "/var/opt/memos/" && rm -rf "$BACKUP_DIR"
 			if ! [ -f "$DB_PATH" ]; then
 				echo "Database restore from backup failed! Exiting..."
 				exit 1
