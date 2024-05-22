@@ -5,6 +5,7 @@ on:
     paths:
       - 'Dockerfile.memogram'
       - 'scripts/memogram.sh'
+      - 'Dockerfile'
   workflow_dispatch:
 
 jobs:
