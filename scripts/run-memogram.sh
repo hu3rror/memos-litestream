@@ -20,7 +20,7 @@ if use_memogram; then
 		timeout=30
 		while [ $timeout -gt 0 ]; do
 			if pgrep -x "memos" >/dev/null; then
-				./memogram
+				./memogram &
 				break
 			else
 				echo "memos is not running, waiting for 5 seconds before retrying"
@@ -31,6 +31,7 @@ if use_memogram; then
 
 		if [ $timeout -eq 0 ]; then
 			echo "over 30 seconds, memos is still not running, exiting"
+			exit 1
 		fi
 	fi
 fi
