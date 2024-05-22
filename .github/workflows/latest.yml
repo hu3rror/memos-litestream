@@ -1,4 +1,4 @@
-name: get-build-lastest-artifacts-and-push-image
+name: Upstream latest image
 
 on:
   schedule:

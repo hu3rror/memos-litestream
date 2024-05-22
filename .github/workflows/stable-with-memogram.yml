@@ -1,4 +1,4 @@
-name: get-build-stable-artifacts-with-memogram-and-push-image
+name: Upstream stable image with memogram
 
 on:
   push:

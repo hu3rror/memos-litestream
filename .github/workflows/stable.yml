@@ -1,4 +1,4 @@
-name: get-build-stable-artifacts-and-push-image
+name: Upstream stable image
 
 on:
   push:
