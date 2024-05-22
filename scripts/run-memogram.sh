@@ -2,8 +2,8 @@
 set -e
 
 use_memogram() {
-	[ -f "./memogram" ] && \
-	[ -f "./.env" ]
+	[ -f "./memogram" ] &&
+		[ -f "./.env" ]
 }
 
 if use_memogram; then
