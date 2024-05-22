@@ -14,7 +14,7 @@ WORKDIR /usr/local/memos
 # Add Memogram
 ARG TARGETARCH
 ENV MEMOGRAM_TAG=0.1.1
-RUN apk add --no-cache gcompat && \
+RUN apk add --no-cache gcompat procps && \
     wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
     tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
     rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
