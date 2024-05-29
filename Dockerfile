@@ -28,7 +28,7 @@ COPY etc/memogram.env /etc/memogram.env
 # Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
-ENV MEMOGRAM_TAG=0.1.1
+ENV MEMOGRAM_TAG=0.1.2
 
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     apk add --no-cache gcompat procps && \
