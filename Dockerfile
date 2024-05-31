@@ -22,9 +22,6 @@ COPY etc/litestream.yml /etc/litestream.yml
 COPY scripts/run.sh /usr/local/memos/run.sh
 RUN chmod +x /usr/local/memos/run.sh
 
-# Copy memos environment file
-COPY etc/memogram.env /etc/memogram.env
-
 # Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
