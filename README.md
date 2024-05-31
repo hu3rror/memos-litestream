@@ -57,7 +57,7 @@ For additional insights into litestream, please consult https://litestream.io/ge
 
 ### Optional modifications before execution
 
-- `BOT_TOKEN`: Your telegram bot token
+- `BOT_TOKEN`: Your telegram bot token (Only for `stable-memogram` image)
 
 ## Notes
 

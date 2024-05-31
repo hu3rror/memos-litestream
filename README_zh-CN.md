@@ -54,7 +54,7 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 
 ### 运行前可选
 
-- `BOT_TOKEN`：修改为你的 telegram bot token
+- `BOT_TOKEN`：修改为你的 telegram bot token (仅限 `stable-memogram` 镜像使用)
 
 ## 注意事项
 
