@@ -21,7 +21,7 @@
 
 > 该镜像支持 linux/amd64、linux/arm64
 >
-> `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签，其中 `stable-memogram` 集成了 telegram bot 发送到 Memos 功能，使用前需要自定义 MEMOGRAM_BOT_TOKEN 环境变量，详情查看 https://github.com/usememos/telegram-integration
+> `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签，其中 `stable-memogram` 集成了 telegram bot 发送到 Memos 功能，使用前需要自定义 `BOT_TOKEN` 环境变量，详情查看 https://github.com/usememos/telegram-integration
 
 !!! **在运行之前务必编辑环境变量** !!!
 
@@ -51,6 +51,10 @@ docker run -d ghcr.io/hu3rror/memos-litestream:stable \
 - `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 秘密访问密钥
 
 有关 litestream 的更多信息，请参阅 https://litestream.io/getting-started/
+
+### 运行前可选
+
+- `BOT_TOKEN`：修改为你的 telegram bot token
 
 ## 注意事项
 

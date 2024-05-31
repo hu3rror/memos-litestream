@@ -15,7 +15,7 @@ services:
       - LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com  # change to your litestream endpoint url
       - LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001  # Your s3/b2 access-key-id
       - LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0  # Your s3/b2 secret-access-key
-      - MEMOGRAM_SERVER_ADDR=dns:localhost:5230 # It's better not to change
-      - MEMOGRAM_BOT_TOKEN=0000000000000000000000000000000000000000  # Your telegram bot token
+      # - SERVER_ADDR=dns:localhost:5230 # It's better not to change
+      # - BOT_TOKEN=0000000000000000000000000000000000000000  # Your telegram bot token
     # env_file:
     #   - .env

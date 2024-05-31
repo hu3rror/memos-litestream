@@ -28,21 +28,20 @@ COPY etc/memogram.env /etc/memogram.env
 # Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
-ENV MEMOGRAM_TAG=0.1.1
+ENV MEMOGRAM_TAG=0.1.2
 
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     apk add --no-cache gcompat procps && \
     wget https://github.com/usememos/telegram-integration/releases/download/v${MEMOGRAM_TAG}/memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
     tar -xvf memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz && \
-    mv /etc/memogram.env ./.env && \
     rm memogram_v${MEMOGRAM_TAG}_linux_${TARGETARCH}.tar.gz README.md && \
-    chown root:root ./memogram && \
     chmod +x ./memogram; \
     fi
 
 # Define ENV
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 ENV MEMOS_PORT="5230"
+ENV SERVER_ADDR=dns:localhost:$MEMOS_PORT
 EXPOSE $MEMOS_PORT
 
 # Run memos with litestream (Default WORKDIR is `/usr/local/memos/`)
