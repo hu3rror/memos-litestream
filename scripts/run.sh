@@ -31,28 +31,32 @@ if use_litestream; then
     fi
 fi
 
-# Start Memogram if the required environment variables are set.
-if ! use_memogram; then
-    # Start Litestream with the Memos service as the subprocess.
-    echo "Starting litestream replicate with the Memos service as the subprocess."
-    exec litestream replicate -exec "./memos"
-else
-    # only for fly.io now, The following code needs refactoring.
-    litestream replicate -exec "./memos" &
-    timeout=30
-    while [ $timeout -gt 0 ]; do
-        if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
-            ./memogram
-            break
-        else
-            echo "memos is not running, waiting for 5 seconds before retrying"
-            sleep 5
-            timeout=$((timeout - 5))
-        fi
-    done
+# Start Litestream with the Memos service as the subprocess.
+echo "Starting litestream replicate with the Memos service as the subprocess."
+exec litestream replicate -exec "./memos"
 
-    if [ $timeout -eq 0 ]; then
-        echo "over 30 seconds, memos is still not running, exiting"
-        exit 1
-    fi
-fi
+# # Start Memogram if the required environment variables are set.
+# if ! use_memogram; then
+#     # Start Litestream with the Memos service as the subprocess.
+#     echo "Starting litestream replicate with the Memos service as the subprocess."
+#     exec litestream replicate -exec "./memos"
+# else
+#     # only for fly.io now, The following code needs refactoring.
+#     litestream replicate -exec "./memos" &
+#     timeout=30
+#     while [ $timeout -gt 0 ]; do
+#         if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
+#             ./memogram
+#             break
+#         else
+#             echo "memos is not running, waiting for 5 seconds before retrying"
+#             sleep 5
+#             timeout=$((timeout - 5))
+#         fi
+#     done
+
+#     if [ $timeout -eq 0 ]; then
+#         echo "over 30 seconds, memos is still not running, exiting"
+#         exit 1
+#     fi
+# fi
