@@ -36,10 +36,10 @@ RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     fi
 
 # Define ENV
-ENV DB_PATH="/var/opt/memos/memos_prod.db"
+EXPOSE 5230
 ENV MEMOS_PORT="5230"
-ENV SERVER_ADDR=dns:localhost:$MEMOS_PORT
-EXPOSE $MEMOS_PORT
+ENV SERVER_ADDR=dns:localhost:5230
+ENV DB_PATH="/var/opt/memos/memos_prod.db"
 
 # Run memos with litestream (Default WORKDIR is `/usr/local/memos/`)
 CMD ["./run.sh"]
