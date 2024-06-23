@@ -12,7 +12,7 @@ use_litestream() {
 
 # Check if the required environment variables for Memogram are set.
 use_memogram() {
-    [ -n "$BOT_TOKEN" ] && [ -n "$SERVER_ADDR" ]
+    [ -x /usr/local/memos/memogram ] && [ -n "$BOT_TOKEN" ] && [ -n "$SERVER_ADDR" ]
 }
 
 # Main script logic
@@ -37,7 +37,8 @@ if ! use_memogram; then
     echo "Starting litestream replicate with the Memos service as the subprocess."
     exec litestream replicate -exec "./memos"
 else
-    exec litestream replicate -exec "./memos" &
+    # only for fly.io now, The following code needs refactoring.
+    litestream replicate -exec "./memos" &
     timeout=30
     while [ $timeout -gt 0 ]; do
         if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
