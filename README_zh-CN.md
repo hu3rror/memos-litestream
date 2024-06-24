@@ -15,15 +15,24 @@
   - [创建 BackBlaze B2 存储桶](https://litestream.io/guides/backblaze/#create-a-bucket) 并获取 _bucket-name_ / _endpoint-url_
   - [创建 BackBlaze B2 用户](https://litestream.io/guides/backblaze/#create-a-user) 并获取 _access-key-id_ / _secret-access-key_
 
-## 安装
-
-### 运行
+## 运行
 
 > 该镜像支持 linux/amd64、linux/arm64
 >
-> `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签
+> `stable`、`latest`、`test` 是可用的 Docker 镜像标签，这与 Memos 官方上游镜像的标签是一致的。
 >
-> `stable-memogram` 镜像集成了通过 telegram bot 发送到 Memos 的实验性功能（官方项目：https://github.com/usememos/telegram-integration），使用前需要自定义 `BOT_TOKEN` 环境变量。
+> `stable-memogram` 是本仓库独特的镜像标签，该镜像集成了通过 Telegram BOT 发送到 Memos 的实验性功能（），使用前需要自定义 `BOT_TOKEN` 环境变量。
+
+本仓库的镜像有多种功能组合方案可选：
+
+| 方案类型 | Memos | Litestream | Memogram |
+| :--: | :---: | :--------: | :------: |
+| 方案1  |   ✓   |     ✓      |    ✕     |
+| 方案2  |   ✓   |     ✓      |    ✓     |
+| 方案3  |   ✓   |     ✕      |    ✓     |
+| 方案4  |   ✓   |     ✕      |    ✕     |
+
+### 方案1 使用 Litestream 备份运行 Memos
 
 ```shell
 docker run -d \
@@ -35,25 +44,56 @@ docker run -d \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
 -e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
 -e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
-ghcr.io/hu3rror/memos-litestream:stable
+ghcr.io/hu3rror/memos-litestream:stable # 标签为 stable
 ```
 
-### 建议保留默认
+### 方案2 使用 Litestream 备份运行 Memos，并启用 Telegram BOT 功能
 
-- `LITESTREAM_REPLICA_PATH`
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+-e LITESTREAM_REPLICA_PATH=memos_prod.db \
+-e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
+-e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+-e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e BOT_TOKEN=your-bot-token \
+ghcr.io/hu3rror/memos-litestream:stable-memogram # 标签为 stable-memogram
+```
 
-### 运行前须编辑
+### 方案3 运行 Memos，并启用 Telegram BOT 功能，但不使用 Litestream 备份数据库
 
-- `LITESTREAM_REPLICA_BUCKET`：修改为你的 S3/B2 存储桶名称
-- `LITESTREAM_REPLICA_ENDPOINT`：修改为你的 S3/B2 终端点 URL
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+-e BOT_TOKEN=your-bot-token \
+ghcr.io/hu3rror/memos-litestream:stable-memogram # 标签为 stable-memogram
+```
+
+### 方案4 仅运行 Memos，不启用其他功能
+
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+ghcr.io/hu3rror/memos-litestream:stable # 标签为 stable 或直接使用 neosmemo/memos:stable
+```
+
+### 环境变量说明
+
+- `LITESTREAM_REPLICA_PATH`: 你的数据库文件路径，保持默认即可
+- `LITESTREAM_REPLICA_BUCKET`：你的 S3/B2 存储桶名称
+- `LITESTREAM_REPLICA_ENDPOINT`：你的 S3/B2 终端点 URL
 - `LITESTREAM_ACCESS_KEY_ID`：你的 S3/B2 Key ID
 - `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 密钥 ACCESS KEY
+- `BOT_TOKEN`：你的 Telegram BOT token (仅限 `stable-memogram` 镜像使用)，官方项目：https://github.com/usememos/telegram-integration
 
 有关 litestream 的更多信息，请参阅 https://litestream.io/getting-started/
-
-### 可选（实验性）
-
-- `BOT_TOKEN`：修改为你的 Telegram BOT token (仅限 `stable-memogram` 镜像使用)
 
 ## 注意事项
 

@@ -17,17 +17,26 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
   - To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and acquire the _bucket-name_ / _endpoint-url_
   - To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and obtain the _access-key-id_ / _secret-access-key_
 
-## Installation
+## How to run
 
-### RUN
+## Running
 
-> The image supports linux/amd64, linux/arm64
+> This image supports linux/amd64, linux/arm64.
 >
-> `stable`, `latest`, `test`, `stable-memogram` are accessible docker image tags.
+> `stable`, `latest`, `test` are available Docker image tags, which are consistent with the tags of the official Memos upstream images.
 >
-> `stable-memogram` image integrates the function of being sent to Memos by telegram bot, this is a experimental feature. please set environment variable `BOT_TOKEN` before running.
->
-> For more details, See https://github.com/usememos/telegram-integration
+> `stable-memogram` is a unique image tag in this repository. It integrates the experimental feature of sending messages to Memos via a Telegram bot. Customize the `BOT_TOKEN` environment variable before running.
+
+This repository's images offer various feature combinations:
+
+| Scheme | Memos | Litestream | Memogram |
+| :---: | :---: | :---: | :---: |
+| Scheme 1 | ✓ | ✓ | ✕ |
+| Scheme 2 | ✓ | ✓ | ✓ |
+| Scheme 3 | ✓ | ✕ | ✓ |
+| Scheme 4 | ✓ | ✕ | ✕ |
+
+### Scheme 1: Running Memos with Litestream Backup
 
 ```shell
 docker run -d \
@@ -39,27 +48,56 @@ docker run -d \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
 -e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
 -e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
-ghcr.io/hu3rror/memos-litestream:stable
+ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable`
 ```
 
-or utilize [docker-compose.yml](./docker-compose.yml) in the repository.
+### Scheme 2: Running Memos with Litestream Backup and Enabling Telegram BOT
 
-### Retain the default
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+-e LITESTREAM_REPLICA_PATH=memos_prod.db \
+-e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
+-e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+-e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e BOT_TOKEN=your-bot-token \
+ghcr.io/hu3rror/memos-litestream:stable-memogram # Tag is `stable-memogram`
+```
 
-- `LITESTREAM_REPLICA_PATH`
+### Scheme 3: Running Memos with Telegram BOT, but without Litestream Backup
 
-### Essential modifications before execution
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+-e BOT_TOKEN=your-bot-token \
+ghcr.io/hu3rror/memos-litestream:stable-memogram # Tag is `stable-memogram`
+```
 
-- `LITESTREAM_REPLICA_BUCKET`: Adjust to your S3/B2 bucket name
-- `LITESTREAM_REPLICA_ENDPOINT`: Adjust to your S3/B2 endpoint url
-- `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access-key-id
-- `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 secret-access-key
+### Scheme 4: Running Memos solely, without any other features
 
-For additional insights into litestream, please consult https://litestream.io/getting-started/
+```shell
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable` or use official image `neosmemo/memos:stable`
+```
 
-### Optional (Experimental)
+### Environment Variable Explanation
 
-- `BOT_TOKEN`: Your Telegram BOT token (Only for `stable-memogram` image)
+- `LITESTREAM_REPLICA_PATH`: Your database file path, keep it default.
+- `LITESTREAM_REPLICA_BUCKET`: Your S3/B2 bucket name.
+- `LITESTREAM_REPLICA_ENDPOINT`: Your S3/B2 endpoint URL.
+- `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access key ID.
+- `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 access key secret.
+- `BOT_TOKEN`: Your Telegram BOT token, only for `stable-memogram` image. Official project: [usememos/telegram-integration](https://github.com/usememos/telegram-integration)
+
+And for more information about litestream, see [https://litestream.io/getting-started/](https://litestream.io/getting-started/)
 
 ## Notes
 
