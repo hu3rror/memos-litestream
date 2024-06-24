@@ -28,12 +28,15 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 > `stable-memogram` integrates the function of being sent to Memos by telegram bot, this is a experimental feature. If you need to customize the `BOT_TOKEN` environment variable before using it, go to https://github.com/usememos/telegram-integration to get more details.
 
 ```shell
-docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos \
---env LITESTREAM_REPLICA_PATH=memos_prod.db \
---env LITESTREAM_REPLICA_BUCKET=xxxxxxxxx \
---env LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
---env LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
---env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+docker run -d \
+--name memos \
+-p 5230:5230 \
+-v ~/.memos/:/var/opt/memos \
+-e LITESTREAM_REPLICA_PATH=memos_prod.db \
+-e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
+-e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+-e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 ghcr.io/hu3rror/memos-litestream:stable
 ```
 
