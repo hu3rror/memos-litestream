@@ -25,7 +25,9 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 >
 > `stable`, `latest`, `test`, `stable-memogram` are accessible docker image tags.
 >
-> `stable-memogram` integrates the function of being sent to Memos by telegram bot, this is a experimental feature. If you need to customize the `BOT_TOKEN` environment variable before using it, go to https://github.com/usememos/telegram-integration to get more details.
+> `stable-memogram` image integrates the function of being sent to Memos by telegram bot, this is a experimental feature. please set environment variable `BOT_TOKEN` before running.
+>
+> For more details, See https://github.com/usememos/telegram-integration
 
 ```shell
 docker run -d \
@@ -57,7 +59,7 @@ For additional insights into litestream, please consult https://litestream.io/ge
 
 ### Optional (Experimental)
 
-- `BOT_TOKEN`: Your telegram bot token (Only for `stable-memogram` image)
+- `BOT_TOKEN`: Your Telegram BOT token (Only for `stable-memogram` image)
 
 ## Notes
 

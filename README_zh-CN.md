@@ -23,8 +23,7 @@
 >
 > `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签
 >
-> 其中 `stable-memogram` 集成了 telegram bot 发送到 Memos 功能，这是一个实验性功能，使用前需要自定义 `BOT_TOKEN` 环境变量，详情查看 https://github.com/usememos/telegram-integration
-
+> `stable-memogram` 镜像集成了通过 telegram bot 发送到 Memos 的实验性功能（官方项目：https://github.com/usememos/telegram-integration），使用前需要自定义 `BOT_TOKEN` 环境变量。
 
 ```shell
 docker run -d \
@@ -54,7 +53,7 @@ ghcr.io/hu3rror/memos-litestream:stable
 
 ### 可选（实验性）
 
-- `BOT_TOKEN`：修改为你的 telegram bot token (仅限 `stable-memogram` 镜像使用)
+- `BOT_TOKEN`：修改为你的 Telegram BOT token (仅限 `stable-memogram` 镜像使用)
 
 ## 注意事项
 
