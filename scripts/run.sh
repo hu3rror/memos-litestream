@@ -29,11 +29,14 @@ fi
 
 # # Start Memogram if the required environment variables are set.
 if ! use_memogram; then
+    # Start Memos with Litestream only
     echo "INFO: Now starting Memos service with Litestream."
     exec litestream replicate -exec "./memos"
 else
+    # Start Memos with Litestream first
     echo "INFO: Now starting Memos service with Litestream."
     litestream replicate -exec "./memos" &
+    # Start Memogram after memos is running
     echo "INFO: Found BOT_TOKEN, now trying to start Memos service with Memogram."
     timeout=30
     while [ $timeout -gt 0 ]; do
