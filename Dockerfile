@@ -19,8 +19,8 @@ COPY --from=litestream_package /usr/local/bin/litestream /usr/local/bin/litestre
 COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup script and make it executable.
-COPY scripts/run.sh /usr/local/memos/run.sh
-RUN chmod +x /usr/local/memos/run.sh
+COPY scripts/run.sh ./run.sh
+RUN chmod +x ./run.sh
 
 # Install memogram
 ARG TARGETARCH
