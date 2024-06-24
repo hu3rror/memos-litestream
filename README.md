@@ -19,8 +19,6 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 
 ## How to run
 
-## Running
-
 > This image supports linux/amd64, linux/arm64.
 >
 > `stable`, `latest`, `test` are available Docker image tags, which are consistent with the tags of the official Memos upstream images.
