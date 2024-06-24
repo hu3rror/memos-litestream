@@ -21,38 +21,38 @@
 
 > 该镜像支持 linux/amd64、linux/arm64
 >
-> `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签，其中 `stable-memogram` 集成了 telegram bot 发送到 Memos 功能，使用前需要自定义 `BOT_TOKEN` 环境变量，详情查看 https://github.com/usememos/telegram-integration
+> `stable`、`latest`、`test`、`stable-memogram` 是可用的 Docker 镜像标签
+>
+> 其中 `stable-memogram` 集成了 telegram bot 发送到 Memos 功能，这是一个实验性功能，使用前需要自定义 `BOT_TOKEN` 环境变量，详情查看 https://github.com/usememos/telegram-integration
 
-!!! **在运行之前务必编辑环境变量** !!!
 
 ```shell
-docker run -d ghcr.io/hu3rror/memos-litestream:stable \
+docker run -d \
 --name memos \
 -p 5230:5230 \
 -v ~/.memos/:/var/opt/memos \
---env LITESTREAM_REPLICA_PATH=memos_prod.db \
---env LITESTREAM_REPLICA_BUCKET=xxxxxxxxx \
---env LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
---env LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
---env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0
+-e LITESTREAM_REPLICA_PATH=memos_prod.db \
+-e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
+-e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+-e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+ghcr.io/hu3rror/memos-litestream:stable
 ```
 
-或者使用存储库中的 [docker-compose.yml](./docker-compose.yml)。
-
-### 保留默认设置
+### 建议保留默认
 
 - `LITESTREAM_REPLICA_PATH`
 
-### 运行前必须编辑
+### 运行前须编辑
 
 - `LITESTREAM_REPLICA_BUCKET`：修改为你的 S3/B2 存储桶名称
 - `LITESTREAM_REPLICA_ENDPOINT`：修改为你的 S3/B2 终端点 URL
-- `LITESTREAM_ACCESS_KEY_ID`：你的 S3/B2 访问密钥 ID
-- `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 秘密访问密钥
+- `LITESTREAM_ACCESS_KEY_ID`：你的 S3/B2 Key ID
+- `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 密钥 ACCESS KEY
 
 有关 litestream 的更多信息，请参阅 https://litestream.io/getting-started/
 
-### 运行前可选
+### 可选（实验性）
 
 - `BOT_TOKEN`：修改为你的 telegram bot token (仅限 `stable-memogram` 镜像使用)
 

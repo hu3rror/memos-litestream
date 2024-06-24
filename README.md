@@ -23,21 +23,18 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 
 > The image supports linux/amd64, linux/arm64
 >
-> `stable`, `latest`, `test`, `stable-memogram` are accessible docker image tags. `stable-memogram` integrates the function of being sent to Memos by telegram bot, you need to customize the `BOT_TOKEN` environment variable before using it, go to https://github.com/usememos/telegram-integration to get more details.
-
-!!! **Ensure to modify the environment variables before execution** !!!
+> `stable`, `latest`, `test`, `stable-memogram` are accessible docker image tags.
+>
+> `stable-memogram` integrates the function of being sent to Memos by telegram bot, this is a experimental feature. If you need to customize the `BOT_TOKEN` environment variable before using it, go to https://github.com/usememos/telegram-integration to get more details.
 
 ```shell
-docker run -d ghcr.io/hu3rror/memos-litestream:stable \
---name memos \
--p 5230:5230 \
--v ~/.memos/:/var/opt/memos \
+docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos \
 --env LITESTREAM_REPLICA_PATH=memos_prod.db \
 --env LITESTREAM_REPLICA_BUCKET=xxxxxxxxx \
 --env LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
 --env LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
---env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0
-# --env BOT_TOKEN=0000000000000000000000000000000000000000
+--env LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+ghcr.io/hu3rror/memos-litestream:stable
 ```
 
 or utilize [docker-compose.yml](./docker-compose.yml) in the repository.
@@ -55,7 +52,7 @@ or utilize [docker-compose.yml](./docker-compose.yml) in the repository.
 
 For additional insights into litestream, please consult https://litestream.io/getting-started/
 
-### Optional modifications before execution
+### Optional (Experimental)
 
 - `BOT_TOKEN`: Your telegram bot token (Only for `stable-memogram` image)
 
