@@ -9,31 +9,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: reviewdog/action-depup/with-pr@v1.4.12
+      - uses: reviewdog/action-depup/with-pr@v1.6.0
         with:
           file: Dockerfile
           version_name: LITESTREAM_IMAGE_TAG
           repo: benbjohnson/litestream
-          tag: true
+          tag: false
 
   reviewdog-memos:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: reviewdog/action-depup/with-pr@v1.4.12
+      - uses: reviewdog/action-depup/with-pr@v1.6.0
         with:
           file: Dockerfile
           version_name: MEMOS_IMAGE_TAG
           repo: usememos/memos
-          tag: true
+          tag: false
 
   reviewdog-memogram:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: reviewdog/action-depup/with-pr@v1.4.12
+      - uses: reviewdog/action-depup/with-pr@v1.6.0
         with:
           file: Dockerfile
           version_name: MEMOGRAM_TAG
           repo: usememos/telegram-integration
-          tag: true
+          tag: false
