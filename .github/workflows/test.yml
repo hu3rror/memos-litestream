@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-push-release-image:
+  build-and-push-test-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,6 +27,9 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          version: v0.9.1
 
       - name: Docker meta
         id: meta
@@ -34,18 +37,18 @@ jobs:
         with:
           images: |
             ghcr.io/hu3rror/memos-litestream
+          flavor: |
+            latest=false
           tags: |
-            type=raw,value=testing
             type=raw,value=test
 
       - name: Build and Push
         id: docker_build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          build-args: MEMOS_IMAGE_TAG=test
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
