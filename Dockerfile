@@ -1,11 +1,11 @@
 ARG LITESTREAM_IMAGE_TAG=0.3.13
 ARG MEMOS_IMAGE_TAG=0.22.5
 
-# Build litestream
+# Get litestream image
 FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS litestream_package
 ENTRYPOINT []
 
-# Get official memos image and let it as a base
+# Get official memos image
 FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS memos_package
 ENTRYPOINT []
 
