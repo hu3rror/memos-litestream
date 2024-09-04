@@ -6,14 +6,25 @@ FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS litestream_packa
 ENTRYPOINT []
 
 # Get official memos image and let it as a base
-FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS production
+FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS memos_package
 ENTRYPOINT []
+
+# Build production image 
+FROM alpine:latest AS production
 
 # Set working directory
 WORKDIR /usr/local/memos
 
-# Copy litestream binary to /usr/local/bin
+# Copy binary to /usr/local/bin
 COPY --from=litestream_package /usr/local/bin/litestream /usr/local/bin/litestream
+COPY --from=memos_package /usr/local/memos/memos /usr/local/memos/
+
+# Set timezone
+RUN apk add --no-cache tzdata
+
+# Create /var/opt/memos
+RUN mkdir -p /var/opt/memos
+VOLUME /var/opt/memos
 
 # Copy litestream configuration file to /etc/
 COPY etc/litestream.yml /etc/litestream.yml
@@ -36,7 +47,9 @@ RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     fi
 
 # Define ENV
+ENV TZ="UTC"
 ENV MEMOS_PORT="5230"
+ENV MEMOS_MODE="prod"
 ENV SERVER_ADDR=dns:localhost:${MEMOS_PORT}
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
 
