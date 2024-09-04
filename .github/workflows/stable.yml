@@ -37,9 +37,6 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          install: true
-          version: v0.9.1
 
       - name: Docker meta
         id: meta
