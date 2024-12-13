@@ -36,7 +36,7 @@ RUN chmod +x ./run.sh
 # Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
-ENV MEMOGRAM_TAG=0.1.6
+ENV MEMOGRAM_TAG=0.1.7
 
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     apk add --no-cache gcompat procps && \
