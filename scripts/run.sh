@@ -50,6 +50,5 @@ else
     log "[INFO] Litestream is not configured. Skipping database restore check."
 fi
 
-log "[INFO] Initial setup complete. Handing over to CMD (tini + supervisord)."
-# After this script completes, the CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", ...] in the Dockerfile will be executed.
-exec "$@" # <--- Add this line
+log "[INFO] Initial setup complete. Handing over to supervisord."
+exec "$@"
