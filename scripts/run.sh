@@ -52,4 +52,5 @@ fi
 
 log "[INFO] Initial setup complete. Handing over to CMD (tini + supervisord)."
 # 这个脚本执行完毕后，Dockerfile 中的 CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", ...] 将会执行
-exit 0
+# exit 0
+exec "$@" # <--- 增加这一行
