@@ -40,19 +40,23 @@ start_memogram() {
     fi
 }
 
-# Check for MEMOS_TOKEN and save it to data.txt
-if [ -n "$MEMOS_TOKEN" ]; then
+# Check for MEMOS_TOKEN and TG_ID and save it to data.txt
+if [ -n "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
   # Determine the directory of the script
   SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
   DATA_FILE="$SCRIPT_DIR/data.txt"
 
-  log "[INFO] Found MEMOS_TOKEN environment variable. Saving to $DATA_FILE"
-  echo "$MEMOS_TOKEN" > "$DATA_FILE"
+  log "[INFO] Found MEMOS_TOKEN and TG_ID environment variables. Saving to $DATA_FILE"
+  echo "$TG_ID:$MEMOS_TOKEN" > "$DATA_FILE"
   if [ $? -ne 0 ]; then
-    log "[ERROR] Failed to save MEMOS_TOKEN to $DATA_FILE"
+    log "[ERROR] Failed to save TG_ID:MEMOS_TOKEN to $DATA_FILE"
   else
-    log "[INFO] MEMOS_TOKEN saved successfully to $DATA_FILE"
+    log "[INFO] TG_ID:MEMOS_TOKEN saved successfully to $DATA_FILE"
   fi
+elif [ -n "$MEMOS_TOKEN" ] && [ -z "$TG_ID" ]; then
+  log "[WARNING] Found MEMOS_TOKEN but TG_ID is not set.  Not saving to data.txt"
+elif [ -z "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
+  log "[WARNING] Found TG_ID but MEMOS_TOKEN is not set.  Not saving to data.txt"
 fi
 
 # Start Litestream to restore the database.
