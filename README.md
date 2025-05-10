@@ -16,6 +16,7 @@ This endeavor is grounded in [usememos/memos](https://github.com/usememos/memos)
 - [BackBlaze B2](https://www.backblaze.com/) / S3-compatible account (The default template is B2-based)
   - To [Create a BackBlaze B2 bucket](https://litestream.io/guides/backblaze/#create-a-bucket) and acquire the _bucket-name_ / _endpoint-url_
   - To [Create a BackBlaze B2 user](https://litestream.io/guides/backblaze/#create-a-user) and obtain the _access-key-id_ / _secret-access-key_
+- (Optional) Telegram Bot Token if using Memogram.  See [usememos/telegram-integration](https://github.com/usememos/telegram-integration) for details.
 
 ## How to run
 
@@ -34,6 +35,12 @@ This repository's images offer various feature combinations:
 | Scheme 3 | ✓ | ✕ | ✓ |
 | Scheme 4 | ✓ | ✕ | ✕ |
 
+### Understanding the Schemes
+
+*   **Memos:** The core Memos application.
+*   **Litestream:** Enables continuous SQLite database replication to a remote S3-compatible storage (like Backblaze B2) for backup and restoration.
+*   **Memogram:** An experimental feature that allows you to send memos to your Memos instance via a Telegram bot.
+
 ### Scheme 1: Running Memos with Litestream Backup
 
 ```shell
@@ -49,7 +56,7 @@ docker run -d \
 ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable`
 ```
 
-### Scheme 2: Running Memos with Litestream Backup and Enabling Telegram BOT
+### Scheme 2: Running Memos with Litestream Backup and Enabling Telegram BOT (Memogram)
 
 ```shell
 docker run -d \
@@ -65,7 +72,7 @@ docker run -d \
 ghcr.io/hu3rror/memos-litestream:stable-memogram # Tag is `stable-memogram`
 ```
 
-### Scheme 3: Running Memos with Telegram BOT, but without Litestream Backup
+### Scheme 3: Running Memos with Telegram BOT (Memogram), but without Litestream Backup
 
 ```shell
 docker run -d \
@@ -94,12 +101,20 @@ ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable` or use official image 
 - `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access key ID.
 - `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 access key secret.
 - `BOT_TOKEN`: Your Telegram BOT token, only for `stable-memogram` image. Official project: [usememos/telegram-integration](https://github.com/usememos/telegram-integration)
+- `MEMOS_TOKEN`: Memos API token for Memogram to use.  If not set, Memogram will attempt to use the first admin user's token.
+- `TG_ID`: Telegram User ID that will be allowed to use the bot.
 
 And for more information about litestream, see [https://litestream.io/getting-started/](https://litestream.io/getting-started/)
 
-## Notes
+## Data Persistence and Restoration
 
-Your data is stored in `~/.memos` by default.
+Your data is stored in `~/.memos` by default. This directory is mounted as a volume in the Docker containers, ensuring data persistence across container restarts.
+
+**Automatic Database Restoration:**
+
+*   If a local database file (`$DB_PATH`, typically `memos_prod.db`) is *not* found when the container starts, Litestream will automatically attempt to restore the database from your configured S3/B2 bucket.
+*   If a local database file *is* found, Litestream will *not* automatically restore from the bucket. This prevents accidental overwrites of your local data.
+*   To force a restore from the bucket, delete the local database file *before* starting the container. **Warning:** This will overwrite your local data. Ensure you have a backup if needed.
 
 In the event of accidental data deletion, restarting the docker container will trigger automatic downloading of the database file from your S3/B2 Bucket.
 
