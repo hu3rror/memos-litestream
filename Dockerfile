@@ -10,7 +10,7 @@ FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS memos_package
 ENTRYPOINT []
 
 # Build production image 
-FROM alpine:3 AS production
+FROM alpine:3.21 AS production
 
 # Install supervisor and tini for process management
 RUN apk add --no-cache supervisor tzdata procps
@@ -65,4 +65,7 @@ EXPOSE ${MEMOS_PORT}
 
 # run.sh will do initial setup, then tini will launch supervisord
 ENTRYPOINT ["/usr/local/memos/run.sh"]
+# CMD will be passed to supervisord
+# -n: do not daemonize;
+# -c: specify the config file
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

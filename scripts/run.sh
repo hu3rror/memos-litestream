@@ -11,11 +11,11 @@ use_litestream_check() {
     [ -n "$LITESTREAM_REPLICA_BUCKET" ] && [ -n "$LITESTREAM_REPLICA_PATH" ] && [ -n "$LITESTREAM_REPLICA_ENDPOINT" ] && [ -n "$LITESTREAM_ACCESS_KEY_ID" ] && [ -n "$LITESTREAM_SECRET_ACCESS_KEY" ]
 }
 
-cd /usr/local/memos # 确保在正确的工作目录
+cd /usr/local/memos # Ensure we are in the correct working directory
 
 # Check for MEMOS_TOKEN and TG_ID and save it to data.txt
 if [ -n "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
-  DATA_FILE="/usr/local/memos/data.txt" # 确保路径正确
+  DATA_FILE="/usr/local/memos/data.txt" # Ensure the path is correct
 
   log "[INFO] Found MEMOS_TOKEN and TG_ID environment variables. Saving to $DATA_FILE"
   echo "$TG_ID:$MEMOS_TOKEN" > "$DATA_FILE"
@@ -37,7 +37,7 @@ if use_litestream_check; then
         log "[INFO] If you want to restore the latest version of the database from S3/B2 instead of using the local database, please delete the $DB_PATH file and restart the service."
     else
         log "[WARNING] No local database found, attempt to restore the latest version of database from S3/B2."
-        # 使用 -config 参数确保 litestream 知道其配置文件位置
+        # Use the -config parameter to ensure litestream knows the location of its configuration file
         /usr/local/bin/litestream restore -config /etc/litestream.yml -if-replica-exists "$DB_PATH"
         if [ ! -f "$DB_PATH" ]; then
             log "[WARNING] No database found in S3/B2 or restore failed."
@@ -51,6 +51,5 @@ else
 fi
 
 log "[INFO] Initial setup complete. Handing over to CMD (tini + supervisord)."
-# 这个脚本执行完毕后，Dockerfile 中的 CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", ...] 将会执行
-# exit 0
-exec "$@" # <--- 增加这一行
+# After this script completes, the CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", ...] in the Dockerfile will be executed.
+exec "$@" # <--- Add this line
