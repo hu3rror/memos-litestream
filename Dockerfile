@@ -65,4 +65,4 @@ EXPOSE ${MEMOS_PORT}
 
 # run.sh will do initial setup, then tini will launch supervisord
 ENTRYPOINT ["/usr/local/memos/run.sh"]
-CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+CMD ["/sbin/tini", "--", "/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
