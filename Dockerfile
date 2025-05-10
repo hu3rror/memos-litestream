@@ -13,7 +13,7 @@ ENTRYPOINT []
 FROM alpine:3 AS production
 
 # Install supervisor and tini for process management
-RUN apk add --no-cache supervisor tini tzdata
+RUN apk add --no-cache supervisor tzdata procps
 
 # Set working directory
 WORKDIR /usr/local/memos
@@ -31,7 +31,7 @@ COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup script and supervisor config
 COPY scripts/run.sh /usr/local/memos/run.sh
-COPY scripts/supervisord.conf /etc/supervisor/conf.d/memos.conf
+COPY scripts/supervisord.conf /etc/supervisord.conf
 # We will create two small helper scripts for supervisor
 COPY scripts/start_memos_service.sh /usr/local/memos/start_memos_service.sh
 COPY scripts/start_memogram_service.sh /usr/local/memos/start_memogram_service.sh
@@ -65,4 +65,4 @@ EXPOSE ${MEMOS_PORT}
 
 # run.sh will do initial setup, then tini will launch supervisord
 ENTRYPOINT ["/usr/local/memos/run.sh"]
-CMD ["/sbin/tini", "-s", "--", "/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
