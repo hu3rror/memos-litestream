@@ -25,26 +25,26 @@ log "[INFO] Found BOT_TOKEN, now attempt to start Memogram service."
 # 等待 memos 启动并创建数据库文件
 # 使用 nc (netcat) 或类似工具检查 memos 端口是否可达可能更可靠
 # 但 pgrep 和文件检查也是一种方法
-timeout=120 # 增加超时时间
+timeout=600 # 增加超时时间
 attempt=0
 max_attempts=$((timeout / 5))
+retry_delay=5 # 重试间隔，单位秒
 
 while [ $attempt -lt $max_attempts ]; do
-    # 检查 memos 进程是否存在。注意：pgrep 可能需要 procps 包
-    # 并且 memos 进程名可能需要精确匹配
-    if pgrep -x "memos" >/dev/null; then
-        log "[INFO] Memos process detected."
+    # 检查 memos 端口是否可达
+    if nc -z localhost "$MEMOS_PORT" 2>/dev/null; then
+        log "[INFO] Memos port $MEMOS_PORT is reachable."
         # 进一步检查 DB_PATH 是否存在，因为 memos 可能仍在初始化
         if [ -f "$DB_PATH" ]; then
             log "[INFO] Database file $DB_PATH found. Now starting Memogram service."
             exec /usr/local/memos/memogram # 使用 exec 替换当前 shell
         else
-            log "[WARNING] Memos process running, but DB_PATH $DB_PATH not yet found. Waiting..."
+            log "[WARNING] Memos port reachable, but DB_PATH $DB_PATH not yet found. Waiting..."
         fi
     else
-        log "[WARNING] Memos process not detected. Waiting..."
+        log "[WARNING] Memos port $MEMOS_PORT is not reachable. Waiting..."
     fi
-    sleep 5
+    sleep $retry_delay
     attempt=$((attempt + 1))
 done
 

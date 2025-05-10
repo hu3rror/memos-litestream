@@ -37,7 +37,7 @@ jobs:
           images: |
             ghcr.io/hu3rror/memos-litestream
           tags: |
-            type=raw,value=0.24.2-memogram-test7
+            type=raw,value=0.24.2-memogram
 
       - name: Build and Push
         id: docker_build
