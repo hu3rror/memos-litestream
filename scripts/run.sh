@@ -1,50 +1,21 @@
 #!/bin/sh
 set -e
 
+# Function to log messages with timestamp
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [Entrypoint] $1"
+}
+
 # Function to check if the required environment variables for Litestream are set.
-use_litestream() {
+use_litestream_check() {
     [ -n "$LITESTREAM_REPLICA_BUCKET" ] && [ -n "$LITESTREAM_REPLICA_PATH" ] && [ -n "$LITESTREAM_REPLICA_ENDPOINT" ] && [ -n "$LITESTREAM_ACCESS_KEY_ID" ] && [ -n "$LITESTREAM_SECRET_ACCESS_KEY" ]
 }
 
-# Function to check if the required environment variables for Memogram are set.
-use_memogram() {
-    [ -x ./memogram ] && [ -n "$BOT_TOKEN" ]
-}
-
-# Function to log messages with timestamp
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $1"
-}
-
-# Function to start Memogram.
-start_memogram() {
-    log "[INFO] Found BOT_TOKEN, now attempt to start Memogram service."
-
-    timeout=60
-    while [ $timeout -gt 0 ]; do
-        if pgrep -x "memos" >/dev/null && [ -f "$DB_PATH" ]; then
-            log "[INFO] Now starting Memogram service."
-            ./memogram
-            break
-        else
-            log "[WARNING] memos is not running, waiting for 5 seconds before retrying"
-            sleep 5
-            timeout=$((timeout - 5))
-        fi
-    done
-
-    # Exit if memos is still not running
-    if [ $timeout -eq 0 ]; then
-        log "[ERROR] Timeout over 60 seconds, memos is still not running, exiting"
-        exit 1
-    fi
-}
+cd /usr/local/memos # 确保在正确的工作目录
 
 # Check for MEMOS_TOKEN and TG_ID and save it to data.txt
 if [ -n "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
-  # Determine the directory of the script
-  SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-  DATA_FILE="$SCRIPT_DIR/data.txt"
+  DATA_FILE="/usr/local/memos/data.txt" # 确保路径正确
 
   log "[INFO] Found MEMOS_TOKEN and TG_ID environment variables. Saving to $DATA_FILE"
   echo "$TG_ID:$MEMOS_TOKEN" > "$DATA_FILE"
@@ -54,50 +25,31 @@ if [ -n "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
     log "[INFO] TG_ID:MEMOS_TOKEN saved successfully to $DATA_FILE"
   fi
 elif [ -n "$MEMOS_TOKEN" ] && [ -z "$TG_ID" ]; then
-  log "[WARNING] Found MEMOS_TOKEN but TG_ID is not set.  Not saving to data.txt"
+  log "[WARNING] Found MEMOS_TOKEN but TG_ID is not set. Not saving to data.txt"
 elif [ -z "$MEMOS_TOKEN" ] && [ -n "$TG_ID" ]; then
-  log "[WARNING] Found TG_ID but MEMOS_TOKEN is not set.  Not saving to data.txt"
+  log "[WARNING] Found TG_ID but MEMOS_TOKEN is not set. Not saving to data.txt"
 fi
 
-# Start Litestream to restore the database.
-if use_litestream; then
+# Start Litestream to restore the database if configured and DB doesn't exist.
+if use_litestream_check; then
     if [ -f "$DB_PATH" ]; then
         log "[WARNING] Local Database exists, skipping restore."
         log "[INFO] If you want to restore the latest version of the database from S3/B2 instead of using the local database, please delete the $DB_PATH file and restart the service."
-        log "[WARNING] Deleting the $DB_PATH file may cause data loss. Make sure to backup your database before deleting the $DB_PATH file."
     else
         log "[WARNING] No local database found, attempt to restore the latest version of database from S3/B2."
-        litestream restore -if-replica-exists "$DB_PATH"
+        # 使用 -config 参数确保 litestream 知道其配置文件位置
+        /usr/local/bin/litestream restore -config /etc/litestream.yml -if-replica-exists "$DB_PATH"
         if [ ! -f "$DB_PATH" ]; then
-            log "[WARNING] No database found in S3/B2."
-            log "[INFO] It seems that you are using memos for the first time, the database will be created after the first run."
+            log "[WARNING] No database found in S3/B2 or restore failed."
+            log "[INFO] The database will be created by Memos on its first run if it's still missing."
+        else
+            log "[INFO] Database restored successfully to $DB_PATH."
         fi
     fi
+else
+    log "[INFO] Litestream is not configured. Skipping database restore check."
 fi
 
-# Start Memos with Litestream but without Memogram
-if use_litestream && ! use_memogram; then
-    echo "[Scheme] Memos ✓ | Litestream ✓ | Memogram ✕"
-    log "[INFO] Now starting Memos service with Litestream."
-    exec litestream replicate -exec "./memos"
-
-# Start Memos with Litestream and Memogram
-elif use_litestream && use_memogram; then
-    echo "[Scheme] Memos ✓ | Litestream ✓ | Memogram ✓"
-    log "[INFO] Now starting Memos service with Litestream."
-    litestream replicate -exec "./memos" &
-    start_memogram
-
-# Start Memos without Litestream but with Memogram
-elif ! use_litestream && use_memogram; then
-    echo "[Scheme] Memos ✓ | Litestream ✕ | Memogram ✓"
-    log "[INFO] Now starting Memos service."
-    ./memos &
-    start_memogram
-
-# Start Memos solely
-elif ! use_litestream && ! use_memogram; then
-    echo "[Scheme] Memos ✓ | Litestream ✕ | Memogram ✕"
-    log "[INFO] Now starting Memos service."
-    exec ./memos
-fi
+log "[INFO] Initial setup complete. Handing over to CMD (tini + supervisord)."
+# 这个脚本执行完毕后，Dockerfile 中的 CMD ["/usr/bin/tini", "--", "/usr/bin/supervisord", ...] 将会执行
+exit 0
