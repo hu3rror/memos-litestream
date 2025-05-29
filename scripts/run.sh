@@ -11,6 +11,15 @@ use_litestream_check() {
     [ -n "$LITESTREAM_REPLICA_BUCKET" ] && [ -n "$LITESTREAM_REPLICA_PATH" ] && [ -n "$LITESTREAM_REPLICA_ENDPOINT" ] && [ -n "$LITESTREAM_ACCESS_KEY_ID" ] && [ -n "$LITESTREAM_SECRET_ACCESS_KEY" ]
 }
 
+use_memogram_check() {
+    [ -x /usr/local/memos/memogram ] && [ -n "$BOT_TOKEN" ]
+}
+
+if use_memogram_check; then
+    mkdir -p /etc/supervisord/conf.d
+    cp /usr/local/memos/memogram_service.conf /etc/supervisord/conf.d/memogram_service.conf
+fi
+
 cd /usr/local/memos # Ensure we are in the correct working directory
 
 # Check for MEMOS_TOKEN and TG_ID and save it to data.txt

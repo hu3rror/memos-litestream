@@ -32,6 +32,8 @@ COPY etc/litestream.yml /etc/litestream.yml
 # Copy startup script and supervisor config
 COPY scripts/run.sh /usr/local/memos/run.sh
 COPY scripts/supervisord.conf /etc/supervisord.conf
+COPY scripts/conf.d/memos_service.conf /etc/supervisord/conf.d/memos_service.conf
+COPY scripts/conf.d/memogram_service.conf /usr/local/memos/memogram_service.conf
 # We will create two small helper scripts for supervisor
 COPY scripts/start_memos_service.sh /usr/local/memos/start_memos_service.sh
 COPY scripts/start_memogram_service.sh /usr/local/memos/start_memogram_service.sh
