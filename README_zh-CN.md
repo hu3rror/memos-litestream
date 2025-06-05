@@ -103,6 +103,7 @@ ghcr.io/hu3rror/memos-litestream:stable # 标签为 stable 或直接使用 neosm
 - `BOT_TOKEN`：你的 Telegram BOT token (仅限 `stable-memogram` 镜像使用)，官方项目：https://github.com/usememos/telegram-integration
 - `MEMOS_TOKEN`: Memos API token，供 Memogram 使用。 如果未设置，Memogram 将尝试使用第一个管理员用户的 token。
 - `TG_ID`: Telegram 用户 ID，允许使用该 Bot。
+- `ALLOWED_USERNAMES`: 允许您将机器人使用权限限制给特定的Telegram用户。设置后，只有用户名在此列表中的用户才能与机器人交互（用户名不得包含@符号）。如需允许所有用户使用，请留空或删除该变量。
 
 有关 litestream 的更多信息，请参阅 https://litestream.io/getting-started/
 

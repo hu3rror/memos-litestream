@@ -26,18 +26,20 @@ COPY --from=memos_package /usr/local/memos/memos /usr/local/memos/
 RUN mkdir -p /var/opt/memos
 VOLUME /var/opt/memos
 
-# Copy litestream configuration file to /etc/
+# Copy litestream configuration file
 COPY etc/litestream.yml /etc/litestream.yml
 
-# Copy startup script and supervisor config
+# Copy supervisor configuration files
+COPY etc/supervisord.conf /etc/supervisord.conf
+COPY etc/memos_service.conf /etc/supervisord/conf.d/memos_service.conf
+COPY etc/memogram_service.conf /usr/local/memos/memogram_service.conf
+
+# Copy startup script
 COPY scripts/run.sh /usr/local/memos/run.sh
-COPY scripts/supervisord.conf /etc/supervisord.conf
-COPY scripts/conf.d/memos_service.conf /etc/supervisord/conf.d/memos_service.conf
-COPY scripts/conf.d/memogram_service.conf /usr/local/memos/memogram_service.conf
-# We will create two small helper scripts for supervisor
 COPY scripts/start_memos_service.sh /usr/local/memos/start_memos_service.sh
 COPY scripts/start_memogram_service.sh /usr/local/memos/start_memogram_service.sh
 
+# Make scripts executable
 RUN chmod +x /usr/local/memos/run.sh \
     && chmod +x /usr/local/memos/start_memos_service.sh \
     && chmod +x /usr/local/memos/start_memogram_service.sh
@@ -61,6 +63,7 @@ ENV MEMOS_PORT="5230"
 ENV MEMOS_MODE="prod"
 ENV SERVER_ADDR=dns:localhost:${MEMOS_PORT}
 ENV DB_PATH="/var/opt/memos/memos_prod.db"
+ENV ALLOWED_USERNAMES=""
 
 # Expose port
 EXPOSE ${MEMOS_PORT}
