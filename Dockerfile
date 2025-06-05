@@ -45,7 +45,7 @@ RUN chmod +x /usr/local/memos/run.sh \
 # Install memogram
 ARG TARGETARCH
 ARG USE_MEMOGRAM=0
-ENV MEMOGRAM_TAG=0.2.4
+ENV MEMOGRAM_TAG=0.2.5
 
 RUN if [ "$USE_MEMOGRAM" = "1" ]; then \
     apk add --no-cache gcompat procps wget && \
