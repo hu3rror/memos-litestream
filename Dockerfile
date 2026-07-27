@@ -1,5 +1,5 @@
-ARG LITESTREAM_IMAGE_TAG=0.5.15
 ARG MEMOS_IMAGE_TAG=0.30.0
+ARG LITESTREAM_IMAGE_TAG=0.3.13
 
 # Get litestream image
 FROM docker.io/litestream/litestream:${LITESTREAM_IMAGE_TAG} AS litestream_package
