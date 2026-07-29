@@ -129,3 +129,63 @@ cd memos-litestream
 # 根据需要进行修改
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
+
+## 迁移回 Memos 官方镜像
+
+如果你不再需要 Litestream 自动备份或 Memogram 机器人功能，或者希望直接使用 Memos 官方上游更新，可以非常方便地迁移回官方镜像（`ghcr.io/usememos/memos`）。
+
+### 前提条件与注意事项
+
+1. **务必先备份**：在执行任何变更之前，请先备份宿主机上的数据目录（如 `~/.memos`）。
+2. **Litestream 缓存刷新**：正常停止 `memos-litestream` 容器，以确保 SQLite 预写日志（`memos_prod.db-wal`）中的所有事务都已经完整写入主数据库文件 `memos_prod.db`。
+3. **Memogram 功能说明**：官方 Memos 镜像不包含 Memogram（Telegram 机器人）侧边栏服务。如果你依赖 Telegram 机器人发 Memo，需要单独部署 Memogram。
+4. **文件权限调整**：官方 Memos 镜像以非 Root 用户（`nonroot`，UID 10001）运行。如果迁移后遇到权限报错，请调整挂载文件夹的属主，或在启动命令中加上 `-e MEMOS_UID=$(id -u) -e MEMOS_GID=$(id -g)`。
+
+### 迁移步骤
+
+#### 步骤 1：停止并删除当前的容器
+正常停止容器可以确保 Litestream 将未落盘的日志（WAL）完整写入到 `memos_prod.db` 中。
+
+```shell
+docker stop memos
+docker rm memos
+```
+
+#### 步骤 2：备份本地数据目录
+复制一份宿主机的数据目录作为备份：
+
+```shell
+cp -r ~/.memos ~/.memos_backup
+```
+
+#### 步骤 3：启动官方 Memos 容器
+使用相同的宿主机挂载路径（`~/.memos`）启动官方镜像：
+
+**使用 `docker run`：**
+
+```shell
+docker run -d \
+  --name memos \
+  --restart unless-stopped \
+  -p 5230:5230 \
+  -v ~/.memos:/var/opt/memos \
+  ghcr.io/usememos/memos:latest
+```
+
+**使用 `docker-compose.yml`：**
+
+```yaml
+version: "3.0"
+services:
+  memos:
+    image: ghcr.io/usememos/memos:latest
+    container_name: memos
+    restart: unless-stopped
+    ports:
+      - "5230:5230"
+    volumes:
+      - ~/.memos:/var/opt/memos
+```
+
+#### 步骤 4：验证服务
+在浏览器中打开 `http://localhost:5230`，确认你的账号、历史 Memo 及数据均正常显示。

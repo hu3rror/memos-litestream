@@ -129,3 +129,63 @@ cd memos-litestream
 # modify as necessary
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
+
+## Migrating Back to Official Memos Image
+
+If you no longer need Litestream backup or Memogram integration, or if you want to switch directly to official upstream updates, you can easily migrate back to the official Memos image (`ghcr.io/usememos/memos`).
+
+### Prerequisites & Important Notes
+
+1. **Backup First**: Before making any changes, back up your local data directory (e.g., `~/.memos`).
+2. **Litestream WAL Flush**: Stop the `memos-litestream` container cleanly to ensure all database transactions in the WAL file (`memos_prod.db-wal`) are fully checkpointed/flushed into `memos_prod.db`.
+3. **Memogram Feature**: The official Memos container does **not** include the Memogram (Telegram bot) sidecar. If you rely on Telegram bot integration, you will need to host Memogram separately.
+4. **File Permissions**: Official Memos runs as a non-root user (`nonroot`, UID 10001). If you encounter permission errors after migrating, adjust your folder ownership or set `-e MEMOS_UID=$(id -u) -e MEMOS_GID=$(id -g)`.
+
+### Migration Steps
+
+#### Step 1: Stop and remove the existing container
+Stopping the container properly ensures Litestream flushes all pending WAL writes to `memos_prod.db`.
+
+```shell
+docker stop memos
+docker rm memos
+```
+
+#### Step 2: Backup your local data
+Make a copy of your host data directory:
+
+```shell
+cp -r ~/.memos ~/.memos_backup
+```
+
+#### Step 3: Launch the official Memos container
+Run the official container using the exact same host volume path (`~/.memos`):
+
+**Using `docker run`:**
+
+```shell
+docker run -d \
+  --name memos \
+  --restart unless-stopped \
+  -p 5230:5230 \
+  -v ~/.memos:/var/opt/memos \
+  ghcr.io/usememos/memos:latest
+```
+
+**Using `docker-compose.yml`:**
+
+```yaml
+version: "3.0"
+services:
+  memos:
+    image: ghcr.io/usememos/memos:latest
+    container_name: memos
+    restart: unless-stopped
+    ports:
+      - "5230:5230"
+    volumes:
+      - ~/.memos:/var/opt/memos
+```
+
+#### Step 4: Verify your instance
+Open `http://localhost:5230` in your browser to confirm your data, account, and memos are intact.
