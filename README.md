@@ -130,6 +130,15 @@ cd memos-litestream
 docker buildx build ./ --file ./Dockerfile --tag <your-tag>
 ```
 
+## Maintenance Status & Disclaimer
+
+> ⚠️ **Project Status: Basic Maintenance Only (As-Is)**
+>
+> - **As-Is Provision**: This project is provided on an **"as-is"** basis with minimal or no ongoing maintenance. Use it at your own risk.
+> - **No Upstream Guarantee**: If the official Memos upstream undergoes major refactoring, breaking changes, or architectural updates, **I will not follow up or push compatibility updates**.
+> - **Data Safety**: You are solely responsible for your own data safety and backup integrity.
+> - **Recommendation**: If you require the latest Memos features, long-term update support, or strict data security guarantees, please manage your own backups and **[migrate back to the official Memos image](#migrating-back-to-official-memos-image)**.
+
 ## Migrating Back to Official Memos Image
 
 If you no longer need Litestream backup or Memogram integration, or if you want to switch directly to official upstream updates, you can easily migrate back to the official Memos image (`ghcr.io/usememos/memos`).
