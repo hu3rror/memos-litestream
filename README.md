@@ -51,8 +51,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable`
 ```
 
@@ -66,8 +66,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 -e BOT_TOKEN=your-bot-token \
 ghcr.io/hu3rror/memos-litestream:stable-memogram # Tag is `stable-memogram`
 ```
@@ -98,8 +98,8 @@ ghcr.io/hu3rror/memos-litestream:stable # Tag is `stable` or use official image 
 - `LITESTREAM_REPLICA_PATH`: Your database file path, keep it default.
 - `LITESTREAM_REPLICA_BUCKET`: Your S3/B2 bucket name.
 - `LITESTREAM_REPLICA_ENDPOINT`: Your S3/B2 endpoint URL.
-- `LITESTREAM_ACCESS_KEY_ID`: Your S3/B2 access key ID.
-- `LITESTREAM_SECRET_ACCESS_KEY`: Your S3/B2 access key secret.
+- `AWS_ACCESS_KEY_ID`: Your S3/B2 access key ID.
+- `AWS_SECRET_ACCESS_KEY`: Your S3/B2 access key secret.
 - `BOT_TOKEN`: Your Telegram BOT token, only for `stable-memogram` image. Official project: [usememos/telegram-integration](https://github.com/usememos/telegram-integration)
 - `MEMOS_TOKEN`: Memos API token for Memogram to use.  If not set, Memogram will attempt to use the first admin user's token.
 - `TG_ID`: Telegram User ID that will be allowed to use the bot.

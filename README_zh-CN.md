@@ -51,8 +51,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 ghcr.io/hu3rror/memos-litestream:stable # 标签为 stable
 ```
 
@@ -66,8 +66,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 -e BOT_TOKEN=your-bot-token \
 ghcr.io/hu3rror/memos-litestream:stable-memogram # 标签为 stable-memogram
 ```
@@ -98,8 +98,8 @@ ghcr.io/hu3rror/memos-litestream:stable # 标签为 stable 或直接使用 neosm
 - `LITESTREAM_REPLICA_PATH`: 你的数据库文件路径，保持默认即可
 - `LITESTREAM_REPLICA_BUCKET`：你的 S3/B2 存储桶名称
 - `LITESTREAM_REPLICA_ENDPOINT`：你的 S3/B2 终端点 URL
-- `LITESTREAM_ACCESS_KEY_ID`：你的 S3/B2 Key ID
-- `LITESTREAM_SECRET_ACCESS_KEY`：你的 S3/B2 密钥 ACCESS KEY
+- `AWS_ACCESS_KEY_ID`：你的 S3/B2 Key ID
+- `AWS_SECRET_ACCESS_KEY`：你的 S3/B2 密钥 ACCESS KEY
 - `BOT_TOKEN`：你的 Telegram BOT token (仅限 `stable-memogram` 镜像使用)，官方项目：https://github.com/usememos/telegram-integration
 - `MEMOS_TOKEN`: Memos API token，供 Memogram 使用。 如果未设置，Memogram 将尝试使用第一个管理员用户的 token。
 - `TG_ID`: Telegram 用户 ID，允许使用该 Bot。
