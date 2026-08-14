@@ -12,7 +12,7 @@ setup() {
 teardown() {
     rm -rf "$TEST_DIR"
     : > /tmp/calls.log
-    rm -f /tmp/memogram_started
+    rm -f /tmp/memogram_started /usr/local/memos/data.txt
 }
 
 # ── helpers ──────────────────────────────────────────────
