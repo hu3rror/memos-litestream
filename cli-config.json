@@ -1,0 +1,70 @@
+{
+  "containers": [
+    {
+      "name": "memos",
+      "image": "ghcr.io/hu3rror/memos-litestream:latest",
+      "cmd": ["/usr/local/memos/memos"],
+      "env": {
+        "MEMOS_PORT": "5230",
+        "MEMOS_MODE": "prod"
+      },
+      "healthchecks": [
+        {
+          "tcp": {
+            "port": 5230
+          },
+          "interval": 10,
+          "timeout": 2,
+          "grace_period": 10,
+          "success_threshold": 1,
+          "failure_threshold": 3
+        }
+      ],
+      "files": [
+        {
+          "guest_path": "/etc/litestream.yml",
+          "local_path": "etc/litestream.yml"
+        }
+      ]
+    },
+    {
+      "name": "litestream",
+      "image": "ghcr.io/hu3rror/memos-litestream:latest",
+      "cmd": [
+        "/usr/local/bin/litestream",
+        "replicate",
+        "-config", "/etc/litestream.yml"
+      ],
+      "env": {
+        "DB_PATH": "/var/opt/memos/memos_prod.db"
+      },
+      "depends_on": [
+        {
+          "name": "memos",
+          "condition": "healthy"
+        }
+      ],
+      "files": [
+        {
+          "guest_path": "/etc/litestream.yml",
+          "local_path": "etc/litestream.yml"
+        }
+      ]
+    },
+    {
+      "name": "memogram",
+      "image": "ghcr.io/hu3rror/memos-litestream:stable-memogram",
+      "cmd": ["/usr/local/memos/memogram"],
+      "env": {
+        "MEMOS_PORT": "5230",
+        "DB_PATH": "/var/opt/memos/memos_prod.db"
+      },
+      "depends_on": [
+        {
+          "name": "memos",
+          "condition": "healthy"
+        }
+      ]
+    }
+  ]
+}

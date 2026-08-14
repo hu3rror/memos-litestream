@@ -1,0 +1,40 @@
+# Fly.io app configuration for memos-litestream
+# Deploy: fly deploy   (builds from Dockerfile, updates memos container)
+# Or:     fly machine run --machine-config cli-config.json
+#
+# Required secrets (set via `fly secrets set`):
+#   LITESTREAM_REPLICA_BUCKET
+#   LITESTREAM_REPLICA_ENDPOINT
+#   LITESTREAM_ACCESS_KEY_ID
+#   LITESTREAM_SECRET_ACCESS_KEY
+#   LITESTREAM_REPLICA_PATH  (default: memos_prod.db)
+#
+# Optional secrets:
+#   BOT_TOKEN       (Telegram bot token for memogram)
+#   MEMOS_TOKEN     (Memos API token)
+#   TG_ID           (Telegram user ID)
+#   ALLOWED_USERNAMES
+
+app = "memos-litestream"
+primary_region = "ord"
+
+[build]
+
+[experimental]
+  machine_config = "cli-config.json"
+  container = "memos"
+
+[http_service]
+  internal_port = 5230
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[env]
+  DB_PATH = "/var/opt/memos/memos_prod.db"
+  MEMOS_PORT = "5230"
+  MEMOS_MODE = "prod"
