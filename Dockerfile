@@ -12,8 +12,8 @@ ENTRYPOINT []
 # Build production image 
 FROM alpine:3.21 AS production
 
-# Install supervisor and tini for process management
-RUN apk add --no-cache supervisor tzdata procps
+# Install runtime dependencies
+RUN apk add --no-cache tzdata procps
 
 # Set working directory
 WORKDIR /usr/local/memos
@@ -29,19 +29,12 @@ VOLUME /var/opt/memos
 # Copy litestream configuration file
 COPY etc/litestream.yml /etc/litestream.yml
 
-# Copy supervisor configuration files
-COPY etc/supervisord.conf /etc/supervisord.conf
-COPY etc/memos_service.conf /etc/supervisord/conf.d/memos_service.conf
-COPY etc/memogram_service.conf /usr/local/memos/memogram_service.conf
-
-# Copy startup script
-COPY scripts/run.sh /usr/local/memos/run.sh
-COPY scripts/start_memos_service.sh /usr/local/memos/start_memos_service.sh
+# Copy startup scripts
+COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
 COPY scripts/start_memogram_service.sh /usr/local/memos/start_memogram_service.sh
 
 # Make scripts executable
-RUN chmod +x /usr/local/memos/run.sh \
-    && chmod +x /usr/local/memos/start_memos_service.sh \
+RUN chmod +x /usr/local/memos/entrypoint.sh \
     && chmod +x /usr/local/memos/start_memogram_service.sh
 
 # Install memogram
@@ -68,9 +61,5 @@ ENV ALLOWED_USERNAMES=""
 # Expose port
 EXPOSE ${MEMOS_PORT}
 
-# run.sh will do initial setup, then tini will launch supervisord
-ENTRYPOINT ["/usr/local/memos/run.sh"]
-# CMD will be passed to supervisord
-# -n: do not daemonize;
-# -c: specify the config file
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+# entrypoint.sh handles all startup orchestration
+ENTRYPOINT ["/usr/local/memos/entrypoint.sh"]
