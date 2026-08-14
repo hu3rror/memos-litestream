@@ -1,0 +1,24 @@
+name: entrypoint tests
+
+on:
+  push:
+    paths:
+      - 'scripts/entrypoint.sh'
+      - 'tests/**'
+  pull_request:
+    paths:
+      - 'scripts/entrypoint.sh'
+      - 'tests/**'
+  workflow_dispatch:
+
+jobs:
+  bats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build test runner image
+        run: docker build -t memos-litestream-test -f tests/Dockerfile.test .
+
+      - name: Run bats tests
+        run: docker run --rm memos-litestream-test

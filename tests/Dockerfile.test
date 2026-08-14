@@ -1,0 +1,45 @@
+# Test runner image for entrypoint.sh bats tests
+# Build: docker build -t memos-litestream-test -f tests/Dockerfile.test .
+# Run:   docker run --rm memos-litestream-test
+
+FROM alpine:3.21
+
+RUN apk add --no-cache bats nc
+
+# ── entrypoint under test ──────────────────────
+COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
+RUN chmod +x /usr/local/memos/entrypoint.sh
+
+# ── mock binaries at the exact paths used by entrypoint.sh ──
+
+# Mock litestream (at /usr/local/bin/litestream)
+RUN mkdir -p /usr/local/bin && \
+    echo '#!/bin/sh' > /usr/local/bin/litestream && \
+    echo 'echo "litestream $*" >> /tmp/calls.log' >> /usr/local/bin/litestream && \
+    echo 'case "$1" in' >> /usr/local/bin/litestream && \
+    echo '  restore) touch "$DB_PATH" ;;' >> /usr/local/bin/litestream && \
+    echo '  replicate) exit 0 ;;' >> /usr/local/bin/litestream && \
+    echo 'esac' >> /usr/local/bin/litestream && \
+    chmod +x /usr/local/bin/litestream
+
+# Mock memos (at /usr/local/memos/memos)
+RUN mkdir -p /usr/local/memos && \
+    echo '#!/bin/sh' > /usr/local/memos/memos && \
+    echo 'echo "memos $*" >> /tmp/calls.log' >> /usr/local/memos/memos && \
+    echo 'exit 0' >> /usr/local/memos/memos && \
+    chmod +x /usr/local/memos/memos
+
+# Mock memogram (at /usr/local/memos/memogram)
+RUN echo '#!/bin/sh' > /usr/local/memos/memogram && \
+    echo 'echo "memogram $*" >> /tmp/calls.log' >> /usr/local/memos/memogram && \
+    echo 'touch /tmp/memogram_started' >> /usr/local/memos/memogram && \
+    echo 'exit 0' >> /usr/local/memos/memogram && \
+    chmod +x /usr/local/memos/memogram
+
+# Copy test files
+COPY tests/entrypoint.bats /tests/entrypoint.bats
+
+# Ensure calls.log exists
+RUN touch /tmp/calls.log
+
+CMD ["bats", "--print-output-on-failure", "/tests/entrypoint.bats"]
