@@ -4,7 +4,7 @@
 
 FROM alpine:3.21
 
-RUN apk add --no-cache bats nc
+RUN apk add --no-cache bats
 
 # ── entrypoint under test ──────────────────────
 COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh

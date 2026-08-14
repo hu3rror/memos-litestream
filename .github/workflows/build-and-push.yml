@@ -72,7 +72,7 @@ jobs:
             latest=false
           tags: |
             type=raw,value=${{ inputs.tag }}
-            ${{ inputs.add_version_tag && format('type=semver,pattern={{version}},value={0}', steps.vtag.outputs.value) || '' }}
+            ${{ inputs.add_version_tag && format('type=raw,value={0}', steps.vtag.outputs.value) || '' }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
