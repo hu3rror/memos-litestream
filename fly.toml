@@ -1,6 +1,14 @@
 # Fly.io app configuration for memos-litestream
-# Deploy: fly deploy   (builds from Dockerfile, updates memos container)
-# Or:     fly machine run --machine-config cli-config.json
+#
+# Deploy options:
+#   fly machine run --machine-config cli-config.json   (initial deploy)
+#   fly deploy                                          (update memos container only)
+#
+# Note: fly deploy only replaces the container specified in [experimental] container.
+# Litestream and memogram containers keep their old image references.
+# To update them after a fly deploy, either:
+#   - Use fly machine update to update each container's image
+#   - Or use fly machine run with the updated cli-config.json
 #
 # Required secrets (set via `fly secrets set`):
 #   LITESTREAM_REPLICA_BUCKET
