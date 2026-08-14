@@ -1,16 +1,18 @@
 setup() {
     TEST_DIR=$(mktemp -d)
-    CALLS_LOG="$TEST_DIR/calls.log"
+    CALLS_LOG="/tmp/calls.log"
 
     # Ensure DB_PATH points inside the test sandbox
     export DB_PATH="${TEST_DIR}/memos_prod.db"
 
-    # Touch calls.log so it exists even if nothing calls it
-    touch "$CALLS_LOG"
+    # Truncate calls.log (mocks in Dockerfile.test append to /tmp/calls.log)
+    : > "$CALLS_LOG"
 }
 
 teardown() {
     rm -rf "$TEST_DIR"
+    : > /tmp/calls.log
+    rm -f /tmp/memogram_started
 }
 
 # ── helpers ──────────────────────────────────────────────
@@ -103,7 +105,7 @@ assert_file_contains() {
     run /usr/local/memos/entrypoint.sh
 
     # memogram should have been started (mock creates a marker)
-    assert_file_exists "$TEST_DIR/memogram_started"
+    assert_file_exists "/tmp/memogram_started"
 }
 
 @test "memogram: BOT_TOKEN not set → skips memogram" {
@@ -111,7 +113,7 @@ assert_file_contains() {
 
     run /usr/local/memos/entrypoint.sh
 
-    assert_file_not_exists "$TEST_DIR/memogram_started"
+    assert_file_not_exists "/tmp/memogram_started"
 }
 
 @test "data.txt: MEMOS_TOKEN + TG_ID set → writes data.txt" {
