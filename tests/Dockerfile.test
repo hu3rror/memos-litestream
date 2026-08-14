@@ -6,6 +6,14 @@ FROM alpine:3.21
 
 RUN apk add --no-cache bats
 
+# Mock nc — always succeeds so the memogram background subshell
+# proceeds immediately instead of looping for 5 minutes.
+# Must be at /usr/local/bin (before /usr/bin/nc from busybox in PATH).
+RUN echo '#!/bin/sh' > /usr/local/bin/nc && \
+    echo 'echo "nc $*" >> /tmp/calls.log' >> /usr/local/bin/nc && \
+    echo 'exit 0' >> /usr/local/bin/nc && \
+    chmod +x /usr/local/bin/nc
+
 # ── entrypoint under test ──────────────────────
 COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
 RUN chmod +x /usr/local/memos/entrypoint.sh

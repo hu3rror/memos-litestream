@@ -8,7 +8,7 @@ jobs:
   reviewdog-memos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: reviewdog/action-depup/with-pr@v1.6.0
         with:
           file: Dockerfile
@@ -19,7 +19,7 @@ jobs:
   reviewdog-memogram:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: reviewdog/action-depup/with-pr@v1.6.0
         with:
           file: Dockerfile
