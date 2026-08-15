@@ -17,6 +17,17 @@ Built on [usememos/memos](https://github.com/usememos/memos) and [litestream](ht
   - [Create an app key](https://litestream.io/guides/backblaze/#create-a-user) and get the _access-key-id_ and _secret-access-key_
 - (Optional) A Telegram Bot Token if using Memogram. See [usememos/telegram-integration](https://github.com/usememos/telegram-integration).
 
+## Litestream
+
+This image ships Litestream **v0.5.15** (upgraded from v0.3.x). The upgrade is transparent:
+
+- **v0.3.x backups are still restorable.** Litestream v0.5.8+ can restore databases created by v0.3.x without any migration step.
+- **Environment variables updated.** This image now uses the standard `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` names. The old `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` are still supported as fallbacks but no longer documented.
+- **Snapshot by default.** The config now creates a snapshot every 24 hours and keeps them for 7 days. This speeds up recovery for long-running databases.
+- **The config format changed.** If you maintain your own `litestream.yml`, the old `replicas` array format is still parsed but the new `replica` single-object format is recommended. See the [upstream migration guide](https://litestream.io/docs/migration) for details.
+
+> If you're upgrading from an older version of this image, your existing S3 backups require no conversion. Just pull the new image and restart.
+
 ## How to run
 
 > The image supports linux/amd64 and linux/arm64.
@@ -43,8 +54,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 ghcr.io/hu3rror/memos-litestream:stable
 ```
 
@@ -58,8 +69,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 -e BOT_TOKEN=your-bot-token \
 ghcr.io/hu3rror/memos-litestream:stable-memogram
 ```
@@ -93,8 +104,8 @@ Or use the official image `neosmemo/memos:stable`.
 |----------|----------|---------|-------------|
 | `LITESTREAM_REPLICA_BUCKET` | For Litestream | — | S3/B2 bucket name |
 | `LITESTREAM_REPLICA_ENDPOINT` | For Litestream | — | S3/B2 endpoint URL |
-| `LITESTREAM_ACCESS_KEY_ID` | For Litestream | — | S3/B2 access key ID |
-| `LITESTREAM_SECRET_ACCESS_KEY` | For Litestream | — | S3/B2 access key secret |
+| `AWS_ACCESS_KEY_ID` | For Litestream | — | S3/B2 access key ID |
+| `AWS_SECRET_ACCESS_KEY` | For Litestream | — | S3/B2 access key secret |
 | `LITESTREAM_REPLICA_PATH` | No | `memos_prod.db` | Database file name in the bucket |
 | `BOT_TOKEN` | For Memogram | — | Telegram bot token. Only for `stable-memogram` image |
 | `MEMOS_TOKEN` | For Memogram | — | Memos API token. If not set, Memogram tries the first admin user's token |
@@ -130,8 +141,8 @@ fly launch --no-deploy --region ord
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
-  LITESTREAM_ACCESS_KEY_ID=your-key-id \
-  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  AWS_ACCESS_KEY_ID=your-key-id \
+  AWS_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
 # 3. Optional: Telegram bot
@@ -159,8 +170,8 @@ fly launch --no-deploy --region ord --dockerfile ./Dockerfile
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
-  LITESTREAM_ACCESS_KEY_ID=your-key-id \
-  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  AWS_ACCESS_KEY_ID=your-key-id \
+  AWS_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
 # 3. Optional: Telegram bot
@@ -207,7 +218,7 @@ docker buildx build ./ --file ./Dockerfile --build-arg USE_MEMOGRAM=1 --tag your
 
 The container runs a single entrypoint script (`entrypoint.sh`) that handles:
 
-1. **Database restore** — if Litestream is configured and no local database exists, restores from S3/B2
+1. **Database restore** — if Litestream (v0.5.15) is configured and no local database exists, restores from S3/B2
 2. **Memogram startup** — if `BOT_TOKEN` is set, starts Memogram in the background once the memos port is ready
 3. **Memos launch** — runs memos through Litestream replication (if configured) or directly
 
@@ -234,6 +245,66 @@ See [Fly.io troubleshooting docs](https://fly.io/docs/getting-started/troublesho
 ### `fly deploy` fails with "invalid tag"
 
 The version tag format is wrong. Run `fly deploy` without custom tags, or check the `build-and-push.yml` if using GitHub Actions.
+
+## Migrating from Litestream v0.3.x
+
+If you're upgrading the Litestream binary inside this image from v0.3.x to v0.5.x, here's what changed and what you need to know:
+
+### What changed upstream
+
+| Change | v0.3.x | v0.5.x | Impact |
+|--------|--------|--------|--------|
+| SQLite driver | mattn/go-sqlite3 (cgo) | modernc.org/sqlite (no cgo) | No action needed — the binary is self-contained |
+| Cloud SDK | AWS SDK v1, Azure SDK v1 | AWS SDK v2, Azure SDK v2 | Transparent, no config change |
+| Config format | `replicas: [...]` array | `replica:` single object | Old format still works, new format recommended |
+| Snapshot config | Not available | `snapshot.interval` + `snapshot.retention` | Added automatically in this image |
+| Command rename | `litestream wal` | `litestream ltx` | Only affects manual CLI usage, not the entrypoint |
+| Age encryption | Supported | Removed | Not used by this project |
+| v0.3.x restore | — | Supported (v0.5.8+) | Your existing backups are recoverable |
+
+### Environment variables
+
+Litestream v0.5.x uses the standard `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`. The old `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` are still supported as fallbacks but no longer documented.
+
+### Config file change
+
+In `etc/litestream.yml`, the old format:
+
+```yaml
+dbs:
+  - path: $DB_PATH
+    replicas:
+      - type: s3
+        bucket: $LITESTREAM_REPLICA_BUCKET
+        path: $LITESTREAM_REPLICA_PATH
+        endpoint: $LITESTREAM_REPLICA_ENDPOINT
+        force-path-style: true
+```
+
+Has been replaced with:
+
+```yaml
+snapshot:
+  interval: 24h
+  retention: 168h
+
+dbs:
+  - path: $DB_PATH
+    replica:
+      url: s3://$LITESTREAM_REPLICA_BUCKET/$LITESTREAM_REPLICA_PATH
+      endpoint: $LITESTREAM_REPLICA_ENDPOINT
+      force-path-style: true
+```
+
+The `snapshot` section creates a compact snapshot every 24 hours and keeps them for 7 days. This avoids replaying months of WAL to restore a database — the latest snapshot is used instead.
+
+### Upgrading
+
+1. Pull the latest image: `docker pull ghcr.io/hu3rror/memos-litestream:stable`
+2. Stop your container: `docker stop memos && docker rm memos`
+3. Start it again with the same volume and env vars
+
+That's it. Litestream v0.5.x will read your existing S3 backups in the old format and continue replicating normally.
 
 ## Maintenance Status
 

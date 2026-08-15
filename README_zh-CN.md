@@ -17,6 +17,17 @@
   - [创建 B2 访问密钥](https://litestream.io/guides/backblaze/#create-a-user) 并获取 _access-key-id_ 和 _secret-access-key_
 - （可选）Telegram Bot Token，用于 Memogram。详见 [usememos/telegram-integration](https://github.com/usememos/telegram-integration)。
 
+## Litestream
+
+本镜像内置 Litestream **v0.5.15**（从 v0.3.x 升级）。升级对用户透明：
+
+- **v0.3.x 的备份仍然可恢复。** Litestream v0.5.8+ 能直接读取旧版备份，无需迁移。
+- **环境变量已更新。** 本镜像现在使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但不再推荐使用。
+- **默认开启快照。** 配置每 24 小时创建一次快照，保留 7 天。长期运行的数据库恢复时更快。
+- **配置格式变了。** 旧版 `replicas` 数组格式仍能解析，但新版 `replica` 单对象格式更推荐。详情见[上游迁移指南](https://litestream.io/docs/migration)。
+
+> 如果你从旧版镜像升级，现有的 S3 备份无需转换。拉取新镜像重启即可。
+
 ## 运行
 
 > 镜像支持 linux/amd64 和 linux/arm64。
@@ -43,8 +54,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 ghcr.io/hu3rror/memos-litestream:stable
 ```
 
@@ -58,8 +69,8 @@ docker run -d \
 -e LITESTREAM_REPLICA_PATH=memos_prod.db \
 -e LITESTREAM_REPLICA_BUCKET=your-bucket-name \
 -e LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
--e LITESTREAM_ACCESS_KEY_ID=000000001a2b3c40000000001 \
--e LITESTREAM_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
+-e AWS_ACCESS_KEY_ID=000000001a2b3c40000000001 \
+-e AWS_SECRET_ACCESS_KEY=K000ABCDEFGHiJkLmNoPqRsTuVwXyZ0 \
 -e BOT_TOKEN=your-bot-token \
 ghcr.io/hu3rror/memos-litestream:stable-memogram
 ```
@@ -93,9 +104,9 @@ ghcr.io/hu3rror/memos-litestream:stable
 |------|------|--------|------|
 | `LITESTREAM_REPLICA_BUCKET` | Litestream 需要 | — | S3/B2 存储桶名称 |
 | `LITESTREAM_REPLICA_ENDPOINT` | Litestream 需要 | — | S3/B2 终端地址 |
-| `LITESTREAM_ACCESS_KEY_ID` | Litestream 需要 | — | S3/B2 访问密钥 ID |
-| `LITESTREAM_SECRET_ACCESS_KEY` | Litestream 需要 | — | S3/B2 访问密钥 |
 | `LITESTREAM_REPLICA_PATH` | 否 | `memos_prod.db` | 存储桶中的数据库文件名 |
+| `AWS_ACCESS_KEY_ID` | Litestream 需要 | — | S3/B2 访问密钥 ID |
+| `AWS_SECRET_ACCESS_KEY` | Litestream 需要 | — | S3/B2 访问密钥 |
 | `BOT_TOKEN` | Memogram 需要 | — | Telegram Bot Token。仅 `stable-memogram` 镜像 |
 | `MEMOS_TOKEN` | Memogram 需要 | — | Memos API Token。未设置时尝试使用第一个管理员用户的 token |
 | `TG_ID` | Memogram 需要 | — | 允许使用 Bot 的 Telegram 用户 ID |
@@ -130,8 +141,8 @@ fly launch --no-deploy --region ord
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
-  LITESTREAM_ACCESS_KEY_ID=your-key-id \
-  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  AWS_ACCESS_KEY_ID=your-key-id \
+  AWS_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
 # 3. 可选：Telegram Bot
@@ -159,8 +170,8 @@ fly launch --no-deploy --region ord --dockerfile ./Dockerfile
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
-  LITESTREAM_ACCESS_KEY_ID=your-key-id \
-  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  AWS_ACCESS_KEY_ID=your-key-id \
+  AWS_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
 # 3. 可选：Telegram Bot
@@ -207,7 +218,7 @@ docker buildx build ./ --file ./Dockerfile --build-arg USE_MEMOGRAM=1 --tag your
 
 容器启动时运行单个入口脚本（`entrypoint.sh`），负责：
 
-1. **数据库恢复** — 如果配置了 Litestream 且本地数据库不存在，从 S3/B2 恢复
+1. **数据库恢复** — 如果配置了 Litestream（v0.5.15）且本地数据库不存在，从 S3/B2 恢复
 2. **Memogram 启动** — 如果设置了 `BOT_TOKEN`，在后台等待 memos 端口就绪后启动 Memogram
 3. **Memos 启动** — 通过 Litestream 复制（如果配置了）或直接启动 memos
 
@@ -234,6 +245,66 @@ fly deploy --local-only
 ### `fly deploy` 报 "invalid tag" 错误
 
 版本标签格式不对。直接运行 `fly deploy` 不带自定义标签，或用 GitHub Actions 时检查 `build-and-push.yml`。
+
+## 从 Litestream v0.3.x 迁移
+
+如果你从旧版镜像升级（Litestream v0.3.x → v0.5.x），以下是上游变更说明和注意事项。
+
+### 上游变更摘要
+
+| 变更项 | v0.3.x | v0.5.x | 影响 |
+|--------|--------|--------|------|
+| SQLite 驱动 | mattn/go-sqlite3（cgo） | modernc.org/sqlite（无 cgo） | 无需操作，二进制自包含 |
+| 云 SDK | AWS SDK v1, Azure SDK v1 | AWS SDK v2, Azure SDK v2 | 透明，无需改配置 |
+| 配置格式 | `replicas: [...]` 数组 | `replica:` 单对象 | 旧格式仍可解析，推荐新格式 |
+| 快照配置 | 无 | `snapshot.interval` + `snapshot.retention` | 本镜像已自动添加 |
+| 命令重命名 | `litestream wal` | `litestream ltx` | 仅影响手动 CLI，不影响 entrypoint |
+| Age 加密 | 支持 | 已移除 | 本项目未使用 |
+| v0.3.x 备份恢复 | — | 支持（v0.5.8+） | 现有备份可恢复 |
+
+### 环境变量
+
+Litestream v0.5.x 使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但不再推荐使用。
+
+### 配置文件变化
+
+`etc/litestream.yml` 从旧格式：
+
+```yaml
+dbs:
+  - path: $DB_PATH
+    replicas:
+      - type: s3
+        bucket: $LITESTREAM_REPLICA_BUCKET
+        path: $LITESTREAM_REPLICA_PATH
+        endpoint: $LITESTREAM_REPLICA_ENDPOINT
+        force-path-style: true
+```
+
+改为新格式：
+
+```yaml
+snapshot:
+  interval: 24h
+  retention: 168h
+
+dbs:
+  - path: $DB_PATH
+    replica:
+      url: s3://$LITESTREAM_REPLICA_BUCKET/$LITESTREAM_REPLICA_PATH
+      endpoint: $LITESTREAM_REPLICA_ENDPOINT
+      force-path-style: true
+```
+
+新增的 `snapshot` 区域每 24 小时创建一次快照，保留 7 天。恢复数据库时直接用最近的快照，不用重放几个月的 WAL 日志。
+
+### 升级步骤
+
+1. 拉取最新镜像：`docker pull ghcr.io/hu3rror/memos-litestream:stable`
+2. 停止容器：`docker stop memos && docker rm memos`
+3. 用同样的卷和环境变量重新启动
+
+Litestream v0.5.x 会自动读取你现有的旧格式 S3 备份，继续正常复制。
 
 ## 项目维护状态
 

@@ -1,8 +1,10 @@
+snapshot:
+  interval: 24h
+  retention: 168h
+
 dbs:
   - path: $DB_PATH
-    replicas:
-      - type: s3
-        bucket: $LITESTREAM_REPLICA_BUCKET
-        path: $LITESTREAM_REPLICA_PATH
-        endpoint: $LITESTREAM_REPLICA_ENDPOINT
-        force-path-style: true
+    replica:
+      url: s3://$LITESTREAM_REPLICA_BUCKET/$LITESTREAM_REPLICA_PATH
+      endpoint: $LITESTREAM_REPLICA_ENDPOINT
+      force-path-style: true
