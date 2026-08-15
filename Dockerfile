@@ -10,7 +10,7 @@ FROM ghcr.io/usememos/memos:${MEMOS_IMAGE_TAG} AS memos_package
 ENTRYPOINT []
 
 # Build production image 
-FROM alpine:3.21 AS production
+FROM alpine:3.24.1 AS production
 
 # Install runtime dependencies
 RUN apk add --no-cache tzdata procps
@@ -30,12 +30,7 @@ VOLUME /var/opt/memos
 COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup scripts
-COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
-COPY scripts/start_memogram_service.sh /usr/local/memos/start_memogram_service.sh
-
-# Make scripts executable
-RUN chmod +x /usr/local/memos/entrypoint.sh \
-    && chmod +x /usr/local/memos/start_memogram_service.sh
+COPY --chmod=+x scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
 
 # Install memogram
 ARG TARGETARCH
