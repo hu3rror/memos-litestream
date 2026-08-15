@@ -19,7 +19,7 @@ primary_region = 'sjc'
 
 [build]
   [build.args]
-  USE_MEMOGRAM = "1"
+    USE_MEMOGRAM = "1"
 
 [env]
   DB_PATH = '/var/opt/memos/memos_prod.db'
