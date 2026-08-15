@@ -127,8 +127,6 @@ Data lives in `~/.memos` by default. Mount it as a volume to keep data across re
 
 ## Fly.io Deployment
 
----
-
 ### Approach A: Single container (recommended, simpler)
 
 All processes run in one container via the entrypoint script. Same as local Docker. `fly deploy` works normally.
@@ -148,7 +146,7 @@ fly secrets set \
 # 3. Optional: Telegram bot
 fly secrets set BOT_TOKEN=your-bot-token
 
-# 4. Deploy (add USE_MEMOGRAM=1 for Telegram bot)
+# 4. Deploy (with Telegram bot support)
 fly deploy --build-arg USE_MEMOGRAM=1
 ```
 
@@ -156,7 +154,7 @@ The entrypoint handles database restore, memos startup, and memogram (if BOT_TOK
 
 > **Note:** The default `stable` image does not include memogram. Pass `--build-arg USE_MEMOGRAM=1` to `fly deploy`, or set `[build.args]` in `fly.toml` to make it permanent.
 
----
+> **Note:** Memogram needs the Machine to stay awake. The `fly.toml` that `fly launch` generates sets `auto_stop_machines = 'stop'`, so an idle Machine stops and the bot stops answering. Change it to `auto_stop_machines = 'off'` under `[http_service]` before deploying.
 
 ### Approach B: Multi-container sidecar (advanced)
 
@@ -192,8 +190,8 @@ fly machine run --machine-config cli-config.json \
 | `fly deploy` works | ✅ | ❌ (use `fly machine run`) |
 | Memos + Litestream | ✅ | ✅ |
 | Memogram | ✅ | ✅ |
-| Independent scaling | ❌ | ✅ (each container can be updated separately) |
-| Recommended for | Everyone | Users who want to isolate litestream/memogram processes |
+| Independent updates | ❌ | ✅ (each container can be updated separately) |
+| Recommended for | All users | Users who want to isolate litestream/memogram processes |
 
 ### Configuration Files
 

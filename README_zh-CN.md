@@ -19,12 +19,12 @@
 
 ## Litestream
 
-本镜像内置 Litestream **v0.5.15**（从 v0.3.x 升级）。升级对用户透明：
+本镜像内置 Litestream **v0.5.15**（由 v0.3.x 升级而来）。升级无需迁移，变化如下：
 
-- **v0.3.x 的备份仍然可恢复。** Litestream v0.5.8+ 能直接读取旧版备份，无需迁移。
-- **环境变量已更新。** 本镜像现在使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但不再推荐使用。
-- **默认开启快照。** 配置每 24 小时创建一次快照，保留 7 天。长期运行的数据库恢复时更快。
-- **配置格式变了。** 旧版 `replicas` 数组格式仍能解析，但新版 `replica` 单对象格式更推荐。详情见[上游迁移指南](https://litestream.io/docs/migration)。
+- **v0.3.x 的备份仍然可恢复。** Litestream v0.5.8+ 可以直接恢复旧版创建的数据库。
+- **环境变量已更新。** 本镜像现在使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但文档中已不再列出。
+- **默认开启快照。** 配置每 24 小时创建一次快照，保留 7 天。恢复长期运行的数据库会更快。
+- **配置格式变了。** 旧版 `replicas` 数组格式仍能解析，新版 `replica` 单对象格式是推荐写法。详情见[上游迁移指南](https://litestream.io/docs/migration)。
 
 > 如果你从旧版镜像升级，现有的 S3 备份无需转换。拉取新镜像重启即可。
 
@@ -33,7 +33,7 @@
 > 镜像支持 linux/amd64 和 linux/arm64。
 >
 > 标签：`stable`、`stable-memogram`。
-> `stable` 追踪最新版 Memos。`stable-memogram` 额外集成了 Telegram Bot。
+> `stable` 跟随最新版 Memos。`stable-memogram` 额外集成了 Telegram Bot。
 
 功能组合：
 
@@ -103,10 +103,10 @@ ghcr.io/hu3rror/memos-litestream:stable
 | 变量 | 必须 | 默认值 | 说明 |
 |------|------|--------|------|
 | `LITESTREAM_REPLICA_BUCKET` | Litestream 需要 | — | S3/B2 存储桶名称 |
-| `LITESTREAM_REPLICA_ENDPOINT` | Litestream 需要 | — | S3/B2 终端地址 |
-| `LITESTREAM_REPLICA_PATH` | 否 | `memos_prod.db` | 存储桶中的数据库文件名 |
+| `LITESTREAM_REPLICA_ENDPOINT` | Litestream 需要 | — | S3/B2 endpoint 地址 |
 | `AWS_ACCESS_KEY_ID` | Litestream 需要 | — | S3/B2 访问密钥 ID |
 | `AWS_SECRET_ACCESS_KEY` | Litestream 需要 | — | S3/B2 访问密钥 |
+| `LITESTREAM_REPLICA_PATH` | 否 | `memos_prod.db` | 存储桶中的数据库文件名 |
 | `BOT_TOKEN` | Memogram 需要 | — | Telegram Bot Token。仅 `stable-memogram` 镜像 |
 | `MEMOS_TOKEN` | Memogram 需要 | — | Memos API Token。未设置时尝试使用第一个管理员用户的 token |
 | `TG_ID` | Memogram 需要 | — | 允许使用 Bot 的 Telegram 用户 ID |
@@ -116,22 +116,20 @@ ghcr.io/hu3rror/memos-litestream:stable
 
 ## 数据持久化和恢复
 
-数据默认存储在 `~/.memos`，通过卷挂载持久化。
+数据默认存放在 `~/.memos`，挂载为卷即可在重启后保留数据。
 
 **自动恢复：**
 - 启动时若本地数据库文件（`memos_prod.db`）不存在，会自动从 S3/B2 恢复。
 - 若本地数据库已存在，则跳过恢复，防止意外覆盖。
 - 要强制从 S3/B2 恢复，启动前删除本地数据库文件。**这会覆盖本地数据，请先备份。**
 
-**注意：** 本项目**不支持**备份本地资源文件（如图片）。建议使用 Memos 内置的外部存储。
+**注意：** 本项目**不支持**备份本地资源文件（如图片）。请改用 Memos 内置的外部存储。
 
 ## Fly.io 部署
 
----
-
 ### 方案 A：单容器（推荐，更简单）
 
-所有进程在 entrypoint 中管理，和本地 Docker 一样。`fly deploy` 直接可用。
+所有进程由入口脚本统一管理，运行在同一个容器中，和本地 Docker 一样。`fly deploy` 直接可用。
 
 ```shell
 # 1. 创建应用
@@ -148,19 +146,19 @@ fly secrets set \
 # 3. 可选：Telegram Bot
 fly secrets set BOT_TOKEN=your-bot-token
 
-# 4. 部署（需要 Telegram Bot 时加上 USE_MEMOGRAM=1）
+# 4. 部署（构建带 Telegram Bot 的镜像）
 fly deploy --build-arg USE_MEMOGRAM=1
 ```
 
-entrypoint 负责数据库恢复、memos 启动、memogram（如果配了 BOT_TOKEN）。
+入口脚本负责数据库恢复、Memos 启动、Memogram（若设置了 BOT_TOKEN）。
 
-> **注意：** 默认 `stable` 镜像不包含 memogram。需要 `--build-arg USE_MEMOGRAM=1` 构建带 Telegram Bot 的版本。或在 `fly.toml` 中设置 `[build.args]` 使其永久生效。
+> **注意：** 默认 `stable` 镜像不包含 Memogram。部署时传 `--build-arg USE_MEMOGRAM=1`，或在 `fly.toml` 中设置 `[build.args]` 使其永久生效。
 
----
+> **注意：** Memogram 需要 Machine 一直运行。`fly launch` 生成的 `fly.toml` 在 `[http_service]` 下默认 `auto_stop_machines = 'stop'`，应用空闲时 Machine 会停机，bot 也就不再响应消息。部署前把 `auto_stop_machines` 改成 `'off'`。
 
 ### 方案 B：多容器 sidecar（进阶）
 
-Memos、litestream、memogram 各自独立容器，共享同一台 Machine。使用 `cli-config.json`。
+Memos、Litestream、Memogram 各自运行在独立容器中，共享同一台 Machine。使用 `cli-config.json`。
 
 ```shell
 # 1. 创建应用
@@ -192,7 +190,7 @@ fly machine run --machine-config cli-config.json \
 | `fly deploy` 可用 | ✅ | ❌（用 `fly machine run`） |
 | Memos + Litestream | ✅ | ✅ |
 | Memogram | ✅ | ✅ |
-| 独立更新各容器 | ❌ | ✅ |
+| 独立更新各容器 | ❌ | ✅（每个容器可单独更新） |
 | 推荐给 | 所有人 | 想隔离 litestream/memogram 进程的用户 |
 
 ### 配置文件
@@ -222,7 +220,7 @@ docker buildx build ./ --file ./Dockerfile --build-arg USE_MEMOGRAM=1 --tag your
 2. **Memogram 启动** — 如果设置了 `BOT_TOKEN`，在后台等待 memos 端口就绪后启动 Memogram
 3. **Memos 启动** — 通过 Litestream 复制（如果配置了）或直接启动 memos
 
-不需要进程管理器（supervisor）。入口脚本通过 `exec` 将控制权交给 Litestream 或 memos。
+不需要进程管理器（supervisor）。入口脚本通过 `exec` 将控制权交给 Litestream 或 Memos。
 
 ## 故障排查
 
@@ -264,7 +262,7 @@ fly deploy --local-only
 
 ### 环境变量
 
-Litestream v0.5.x 使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但不再推荐使用。
+Litestream v0.5.x 使用标准的 `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`。旧的 `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` 仍作为备选支持，但文档中已不再列出。
 
 ### 配置文件变化
 
@@ -296,7 +294,7 @@ dbs:
       force-path-style: true
 ```
 
-新增的 `snapshot` 区域每 24 小时创建一次快照，保留 7 天。恢复数据库时直接用最近的快照，不用重放几个月的 WAL 日志。
+新增的 `snapshot` 配置段每 24 小时创建一次压缩快照，保留 7 天。恢复数据库时直接使用最近快照，无需重放数月的 WAL 日志。
 
 ### 升级步骤
 
