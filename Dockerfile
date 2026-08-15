@@ -30,7 +30,8 @@ VOLUME /var/opt/memos
 COPY etc/litestream.yml /etc/litestream.yml
 
 # Copy startup scripts
-COPY --chmod=+x scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
+COPY scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
+RUN chmod +x /usr/local/memos/entrypoint.sh
 
 # Install memogram
 ARG TARGETARCH
