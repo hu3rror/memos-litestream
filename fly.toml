@@ -1,48 +1,44 @@
-# Fly.io app configuration for memos-litestream
+# fly.toml app configuration file generated for memos-litestream1 on 2026-08-15T12:58:04+08:00
 #
-# Deploy options:
-#   fly machine run --machine-config cli-config.json   (initial deploy)
-#   fly deploy                                          (update memos container only)
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
-# Note: fly deploy only replaces the container specified in [experimental] container.
-# Litestream and memogram containers keep their old image references.
-# To update them after a fly deploy, either:
-#   - Use fly machine update to update each container's image
-#   - Or use fly machine run with the updated cli-config.json
+# Approach A (recommended): single container, entrypoint.sh manages all processes
+#   fly launch --no-deploy
+#   fly secrets set LITESTREAM_REPLICA_BUCKET=...
+#   fly secrets set LITESTREAM_REPLICA_ENDPOINT=...
+#   fly secrets set LITESTREAM_ACCESS_KEY_ID=...
+#   fly secrets set LITESTREAM_SECRET_ACCESS_KEY=...
+#   fly secrets set LITESTREAM_REPLICA_PATH=memos_prod.db
+#   fly deploy
+#   # Stuck on "Waiting for depot builder..."? Try fly deploy --depot=false
 #
-# Required secrets (set via `fly secrets set`):
-#   LITESTREAM_REPLICA_BUCKET
-#   LITESTREAM_REPLICA_ENDPOINT
-#   LITESTREAM_ACCESS_KEY_ID
-#   LITESTREAM_SECRET_ACCESS_KEY
-#   LITESTREAM_REPLICA_PATH  (default: memos_prod.db)
-#
-# Optional secrets:
-#   BOT_TOKEN       (Telegram bot token for memogram)
-#   MEMOS_TOKEN     (Memos API token)
-#   TG_ID           (Telegram user ID)
-#   ALLOWED_USERNAMES
+# Approach B: multi-container sidecar, see cli-config.json and README.md
 
-app = "memos-litestream"
-primary_region = "ord"
+app = 'memos-litestream'
+primary_region = 'sjc'
 
 [build]
+  [build.args]
+  USE_MEMOGRAM = "1"
 
-[experimental]
-  machine_config = "cli-config.json"
-  container = "memos"
+[env]
+  DB_PATH = '/var/opt/memos/memos_prod.db'
+  MEMOS_MODE = 'prod'
+  MEMOS_PORT = '5230'
+
+[[mounts]]
+  source = 'memos'
+  destination = '/var/opt/memos'
 
 [http_service]
   internal_port = 5230
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
-
-[env]
-  DB_PATH = "/var/opt/memos/memos_prod.db"
-  MEMOS_PORT = "5230"
-  MEMOS_MODE = "prod"
+  memory = '256mb'
+  cpus = 1
+  memory_mb = 256

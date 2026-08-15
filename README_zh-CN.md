@@ -116,15 +116,17 @@ ghcr.io/hu3rror/memos-litestream:stable
 
 ## Fly.io 部署
 
-本项目包含 Fly.io 多容器 Machine 配置。Memos 和 Litestream 在同一台 Machine 中作为独立容器运行，共享 tmpfs 卷访问 SQLite 数据库。
+---
 
-### 部署步骤
+### 方案 A：单容器（推荐，更简单）
+
+所有进程在 entrypoint 中管理，和本地 Docker 一样。`fly deploy` 直接可用。
 
 ```shell
-# 创建应用
-fly launch --no-deploy
+# 1. 创建应用
+fly launch --no-deploy --region ord
 
-# 设置密钥
+# 2. 设置 Litestream 密钥
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
@@ -132,19 +134,60 @@ fly secrets set \
   LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
-# 可选：Telegram Bot
+# 3. 可选：Telegram Bot
 fly secrets set BOT_TOKEN=your-bot-token
 
-# 部署
-fly deploy
+# 4. 部署（需要 Telegram Bot 时加上 USE_MEMOGRAM=1）
+fly deploy --build-arg USE_MEMOGRAM=1
 ```
 
-**注意：** `fly deploy` 只更新 memos 容器。Litestream 和 Memogram 容器仍使用旧镜像。要更新所有容器，请先用 `docker buildx build` 构建新镜像并推送，然后使用 `fly machine run --machine-config cli-config.json`。
+entrypoint 负责数据库恢复、memos 启动、memogram（如果配了 BOT_TOKEN）。
+
+> **注意：** 默认 `stable` 镜像不包含 memogram。需要 `--build-arg USE_MEMOGRAM=1` 构建带 Telegram Bot 的版本。或在 `fly.toml` 中设置 `[build.args]` 使其永久生效。
+
+---
+
+### 方案 B：多容器 sidecar（进阶）
+
+Memos、litestream、memogram 各自独立容器，共享同一台 Machine。使用 `cli-config.json`。
+
+```shell
+# 1. 创建应用
+fly launch --no-deploy --region ord --dockerfile ./Dockerfile
+
+# 2. 设置密钥（和方案 A 一样）
+fly secrets set \
+  LITESTREAM_REPLICA_BUCKET=your-bucket \
+  LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+  LITESTREAM_ACCESS_KEY_ID=your-key-id \
+  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  LITESTREAM_REPLICA_PATH=memos_prod.db
+
+# 3. 可选：Telegram Bot
+fly secrets set BOT_TOKEN=your-bot-token
+
+# 4. 用多容器配置部署
+fly machine run --machine-config cli-config.json \
+  --port 5230:5230/tcp:http
+```
+
+**注意：** 这里不用 `fly deploy`。`fly machine run` 会创建一台含 3 个容器的 Machine。后续更新镜像需用 `fly machine update` 逐个更新，或重新构建后再次 `fly machine run`。
+
+### 选哪个
+
+| | 方案 A | 方案 B |
+|---|:---:|:---:|
+| 复杂度 | 低 | 较高 |
+| `fly deploy` 可用 | ✅ | ❌（用 `fly machine run`） |
+| Memos + Litestream | ✅ | ✅ |
+| Memogram | ✅ | ✅ |
+| 独立更新各容器 | ❌ | ✅ |
+| 推荐给 | 所有人 | 想隔离 litestream/memogram 进程的用户 |
 
 ### 配置文件
 
-- `cli-config.json` — 容器定义（memos、litestream、memogram）
-- `fly.toml` — 应用和服务配置
+- `fly.toml` — 应用和服务配置（方案 A 使用）
+- `cli-config.json` — 多容器定义（方案 B 使用）
 
 ## 开发和构建
 
@@ -168,7 +211,29 @@ docker buildx build ./ --file ./Dockerfile --build-arg USE_MEMOGRAM=1 --tag your
 2. **Memogram 启动** — 如果设置了 `BOT_TOKEN`，在后台等待 memos 端口就绪后启动 Memogram
 3. **Memos 启动** — 通过 Litestream 复制（如果配置了）或直接启动 memos
 
-不需要进程管理器（supervisor）。入口脚本通过 `exec` 将控制权交给 Litestream 或 memos，进程树简洁。
+不需要进程管理器（supervisor）。入口脚本通过 `exec` 将控制权交给 Litestream 或 memos。
+
+## 故障排查
+
+### `fly deploy` 卡在 "Waiting for depot builder..."
+
+Fly.io 的 Depot builder 有时无法启动，高峰期尤其常见。试试：
+
+```shell
+# 绕过 Depot，使用旧版远程构建
+fly deploy --depot=false
+
+# 或在本地构建后上传
+fly deploy --local-only
+```
+
+如果仍然卡住，在 Fly.io Dashboard 中重置 builder：**Settings → App Builders → Reset**，或切换 builder region。
+
+详见 [Fly.io 故障排查文档](https://fly.io/docs/getting-started/troubleshooting/)。
+
+### `fly deploy` 报 "invalid tag" 错误
+
+版本标签格式不对。直接运行 `fly deploy` 不带自定义标签，或用 GitHub Actions 时检查 `build-and-push.yml`。
 
 ## 项目维护状态
 

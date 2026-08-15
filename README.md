@@ -2,7 +2,7 @@
 
 English | [中文](README_zh-CN.md)
 
-Back up your memos SQLite database to S3/B2 with Litestream, automatically. A redesigned version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build).
+Back up your memos SQLite database to S3/B2 with Litestream. A redesigned version of [memos-on-fly-build](https://github.com/hu3rror/memos-on-fly-build).
 
 > For Fly.io deployment, see [Fly.io setup](#flyio-deployment) below.
 > The Docker image works locally and on Fly.io.
@@ -116,15 +116,17 @@ Data lives in `~/.memos` by default. Mount it as a volume to keep data across re
 
 ## Fly.io Deployment
 
-This project includes a multi-container Machine configuration for Fly.io. Memos and Litestream run as separate containers in the same Machine, sharing a tmpfs volume for the SQLite database.
+---
 
-### Setup
+### Approach A: Single container (recommended, simpler)
+
+All processes run in one container via the entrypoint script. Same as local Docker. `fly deploy` works normally.
 
 ```shell
-# Create the app
-fly launch --no-deploy
+# 1. Create the app
+fly launch --no-deploy --region ord
 
-# Set secrets
+# 2. Set Litestream credentials
 fly secrets set \
   LITESTREAM_REPLICA_BUCKET=your-bucket \
   LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
@@ -132,19 +134,60 @@ fly secrets set \
   LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
   LITESTREAM_REPLICA_PATH=memos_prod.db
 
-# Optional: Telegram bot
+# 3. Optional: Telegram bot
 fly secrets set BOT_TOKEN=your-bot-token
 
-# Deploy
-fly deploy
+# 4. Deploy (add USE_MEMOGRAM=1 for Telegram bot)
+fly deploy --build-arg USE_MEMOGRAM=1
 ```
 
-**Note:** `fly deploy` only updates the memos container. Litestream and Memogram containers keep their old image references. To update all containers, use `fly machine run --machine-config cli-config.json` after building and pushing a new image.
+The entrypoint handles database restore, memos startup, and memogram (if BOT_TOKEN is set).
+
+> **Note:** The default `stable` image does not include memogram. Pass `--build-arg USE_MEMOGRAM=1` to `fly deploy`, or set `[build.args]` in `fly.toml` to make it permanent.
+
+---
+
+### Approach B: Multi-container sidecar (advanced)
+
+Memos, litestream, and memogram each run in their own container, sharing the same Machine. Uses `cli-config.json`.
+
+```shell
+# 1. Create the app
+fly launch --no-deploy --region ord --dockerfile ./Dockerfile
+
+# 2. Set secrets (same as Approach A)
+fly secrets set \
+  LITESTREAM_REPLICA_BUCKET=your-bucket \
+  LITESTREAM_REPLICA_ENDPOINT=s3.us-west-000.backblazeb2.com \
+  LITESTREAM_ACCESS_KEY_ID=your-key-id \
+  LITESTREAM_SECRET_ACCESS_KEY=your-secret-key \
+  LITESTREAM_REPLICA_PATH=memos_prod.db
+
+# 3. Optional: Telegram bot
+fly secrets set BOT_TOKEN=your-bot-token
+
+# 4. Deploy with multi-container config
+fly machine run --machine-config cli-config.json \
+  --port 5230:5230/tcp:http
+```
+
+**Note:** `fly deploy` is not used here. `fly machine run` creates a Machine with 3 containers. To update the image later, use `fly machine update` for each container or rebuild and re-run `fly machine run`.
+
+### Which one to pick?
+
+| | Approach A | Approach B |
+|---|:---:|:---:|
+| Complexity | Low | Higher |
+| `fly deploy` works | ✅ | ❌ (use `fly machine run`) |
+| Memos + Litestream | ✅ | ✅ |
+| Memogram | ✅ | ✅ |
+| Independent scaling | ❌ | ✅ (each container can be updated separately) |
+| Recommended for | Everyone | Users who want to isolate litestream/memogram processes |
 
 ### Configuration Files
 
-- `cli-config.json` — container definitions (memos, litestream, memogram)
-- `fly.toml` — app and service configuration
+- `fly.toml` — app and service config (works with Approach A)
+- `cli-config.json` — multi-container definitions (for Approach B)
 
 ## Development and Build
 
@@ -168,7 +211,29 @@ The container runs a single entrypoint script (`entrypoint.sh`) that handles:
 2. **Memogram startup** — if `BOT_TOKEN` is set, starts Memogram in the background once the memos port is ready
 3. **Memos launch** — runs memos through Litestream replication (if configured) or directly
 
-No process manager (supervisor) is needed. The entrypoint uses `exec` to hand off to Litestream or memos directly, keeping the process tree simple.
+No process manager (supervisor) is needed. The entrypoint uses `exec` to hand off to Litestream or memos directly.
+
+## Troubleshooting
+
+### `fly deploy` stuck on "Waiting for depot builder..."
+
+Fly.io's Depot builder sometimes fails to start, especially during peak hours. Try:
+
+```shell
+# Skip Depot, use legacy remote builder
+fly deploy --depot=false
+
+# Or build locally and upload
+fly deploy --local-only
+```
+
+If the problem persists, reset the builder in your Fly.io organization dashboard: **Settings → App Builders → Reset**. Or switch to a different builder region.
+
+See [Fly.io troubleshooting docs](https://fly.io/docs/getting-started/troubleshooting/) for more.
+
+### `fly deploy` fails with "invalid tag"
+
+The version tag format is wrong. Run `fly deploy` without custom tags, or check the `build-and-push.yml` if using GitHub Actions.
 
 ## Maintenance Status
 
